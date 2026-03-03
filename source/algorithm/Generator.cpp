@@ -82,7 +82,7 @@ Image Generator::GenerateImage(const Ruleset& rules, int width, int height) {
         int direction = -1;
         for (int i = boundMinY; i < boundMaxY; ++i) {
             for (int j = boundMinX; j < boundMaxX; ++j) {
-                if (i == 0 && j == 0) continue;
+                if (i == cellY && j == cellX) continue;
                 direction++;
                 const int nextIndex = i * width + j;
                 if (explored[nextIndex]) continue;
@@ -94,7 +94,7 @@ Image Generator::GenerateImage(const Ruleset& rules, int width, int height) {
 
 
     // Generate image
-    Image generateImage = GenImageColor(width, height, BLACK);
+    Image generatedImage = GenImageColor(width, height, BLACK);
 
     for (int i = 0; i < width * height; ++i) {
         if (!explored[i]) continue;
@@ -102,10 +102,76 @@ Image Generator::GenerateImage(const Ruleset& rules, int width, int height) {
         const int posX = i % width;
         const int posY = i / height;
         
-        ImageDrawPixel(&generateImage, posX, posY, rules.GetColor(type));
+        ImageDrawPixel(&generatedImage, posX, posY, rules.GetColor(type));
     }
 
 
-    return generateImage;
+    return generatedImage;
+
+}
+
+
+void Generator::DebugInit(const Ruleset& rules, int width, int height) {
+    this->debugRules = rules;
+    this->debugWidth = width;
+    this->debugHeight = height;
+
+    this->debugImage = GenImageColor(width, height, BLACK);
+    this->debugTexture = LoadTextureFromImage(debugImage);
+
+    this->debugExplored = std::vector<bool>(width * height, false);
+    this->debugConstraints = std::vector<uint32_t>(width * height, ~((~0) << rules.GetNumberOfObjects()));
+    
+    int startingPoint = RandomInteger(0, width * height - 1);
+
+    this->debugOpenSet.Push(startingPoint, startingPoint);
+}
+
+
+void Generator::DebugNext() {
+    if (this->debugOpenSet.GetSize() <= 0) return;
+    
+    const int cellIndex = debugOpenSet.TopItemID();
+    debugOpenSet.Pop();
+    
+    debugConstraints[cellIndex] = ResolveContraints(debugConstraints[cellIndex]);
+    
+    if (debugConstraints[cellIndex] == 0) {
+        const int cellX = cellIndex % debugWidth;
+        const int cellY = cellIndex / debugHeight;
+
+        ImageDrawPixel(&debugImage, cellX, cellY, RED);
+
+        std::printf("No possibilities on cell %i %i\n", cellX, cellY);
+        return;
+    }
+
+    const int type = std::countr_zero(debugConstraints[cellIndex]);
+    debugExplored[cellIndex] = true;
+
+
+    // Get neighbors
+    const int cellX = cellIndex % debugWidth;
+    const int cellY = cellIndex / debugHeight;
+
+    ImageDrawPixel(&debugImage, cellX, cellY, debugRules.GetColor(type));
+    UpdateTexture(debugTexture, debugImage.data);
+
+    const int boundMinY = (cellY - 1) > 0 ? (cellY - 1) : 0;
+    const int boundMinX = (cellX - 1) > 0 ? (cellX - 1) : 0;
+    const int boundMaxY = (cellY + 2) > debugHeight ? debugHeight : (cellY + 2);
+    const int boundMaxX = (cellX + 2) > debugWidth ? debugWidth : (cellX + 2);
+    
+    int direction = -1;
+    for (int i = boundMinY; i < boundMaxY; ++i) {
+        for (int j = boundMinX; j < boundMaxX; ++j) {
+            if (i == cellY && j == cellX) continue;
+            direction++;
+            const int nextIndex = i * debugWidth + j;
+            if (debugExplored[nextIndex]) continue;
+            debugConstraints[nextIndex] = AddConstraints(debugConstraints[nextIndex], debugRules.GetConstraints(type, direction));
+            debugOpenSet.Push(nextIndex, nextIndex);
+        }
+    }
 
 }

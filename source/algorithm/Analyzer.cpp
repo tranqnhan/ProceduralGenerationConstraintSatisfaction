@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <cstdio>
 
 #include "Analyzer.hpp"
 
@@ -32,6 +33,13 @@ Ruleset Analyzer::AnalyzeImage(const std::string &imageFile) {
                     ruleset.AddConstraint(centerId, neigborId, direction++);
                 }
             }
+        }
+    }
+
+    for (int i = 0; i < ruleset.GetNumberOfObjects(); ++i) {
+        for (int k = 0; k < 8; ++k) {
+            uint32_t constraint = ruleset.GetConstraints(i, k);
+            std::printf("id %i constraint %b\n", i, constraint);
         }
     }
 

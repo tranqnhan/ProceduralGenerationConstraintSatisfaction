@@ -10,33 +10,31 @@
 Analyzer sampleAnalyzer;
 Generator generator;
 
-Texture2D generatedTexture;
-
 // Main loop initialization
 void Init() {
     InitWindow(WINDOW_W, WINDOW_H, WINDOW_N);
     SetTargetFPS(60);
 
+    Ruleset ruleset = sampleAnalyzer.AnalyzeImage("../assets/sample4.png");
 
-    Ruleset ruleset = sampleAnalyzer.AnalyzeImage("../assets/sample2.png");
-
-
-    Image generatedImage = generator.GenerateImage(ruleset, 100, 100);
-    UnloadImage(generatedImage);
-
-    generatedTexture = LoadTextureFromImage(generatedImage);
+    generator.DebugInit(ruleset, 100, 100);
 }
 
 
 // Main loop update
 void Update(float deltaTime) {
-
+    const int numIterations = 10;
+    for (int i = 0; i < numIterations; ++i) {
+        generator.DebugNext();
+    }
 }
 
 
 // Main loop input
 void Input() {
-
+    if (IsKeyPressed(KEY_SPACE)) {
+        generator.DebugNext();
+    }
 }
 
 
@@ -48,14 +46,14 @@ void Render() {
     //DrawFPS(0, 0);
 
     // Draw
-    DrawTextureEx(generatedTexture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
+    DrawTextureEx(generator.debugTexture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
 
     EndDrawing();
 }
 
 
 void OnClose() {
-    UnloadTexture(generatedTexture);
+    UnloadTexture(generator.debugTexture);
 }
 
 // Main loop
