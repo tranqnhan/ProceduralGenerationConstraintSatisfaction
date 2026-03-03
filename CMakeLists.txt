@@ -13,7 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(raylib)
 add_executable(ProceduralGenerationConstraintSatisfaction)
 
-target_include_directories(ProceduralGenerationConstraintSatisfaction PUBLIC include)
+target_include_directories(ProceduralGenerationConstraintSatisfaction PUBLIC include library/include)
 
 target_link_libraries(ProceduralGenerationConstraintSatisfaction raylib)
 target_compile_options(ProceduralGenerationConstraintSatisfaction PRIVATE -O2)

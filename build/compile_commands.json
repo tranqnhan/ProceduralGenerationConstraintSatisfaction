@@ -1,25 +1,25 @@
 [
 {
   "directory": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build",
-  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Ruleset.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Ruleset.cpp",
+  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/library/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Ruleset.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Ruleset.cpp",
   "file": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Ruleset.cpp",
   "output": "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Ruleset.cpp.o"
 },
 {
   "directory": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build",
-  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Analyzer.cpp",
+  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/library/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Analyzer.cpp",
   "file": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Analyzer.cpp",
   "output": "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o"
 },
 {
   "directory": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build",
-  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Generator.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Generator.cpp",
+  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/library/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Generator.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Generator.cpp",
   "file": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Generator.cpp",
   "output": "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Generator.cpp.o"
 },
 {
   "directory": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build",
-  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/Main.cpp",
+  "command": "/usr/bin/c++  -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/library/include -std=gnu++23 -O2 -I/usr/include -Werror -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/Main.cpp",
   "file": "/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/Main.cpp",
   "output": "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o"
 }

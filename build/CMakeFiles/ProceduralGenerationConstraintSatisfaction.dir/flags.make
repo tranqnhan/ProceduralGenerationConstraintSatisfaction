@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include
+CXX_INCLUDES = -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/include -I/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/library/include
 
 CXX_FLAGS = -std=gnu++23 -O2 -I/usr/include -Werror
 

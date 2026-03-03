@@ -23,12 +23,13 @@ Ruleset Analyzer::AnalyzeImage(const std::string &imageFile) {
             const int boundMaxX = (j + 2) > sampleImage.width ? sampleImage.width : (j + 2);
             
             // Look at neighbors
+            int direction = 0;
             for (int k = boundMinY; k < boundMaxY; ++k) {
                 for (int l = boundMinX; l < boundMaxX; ++l) {
                     if (k == i && l == j) continue;
                     const Color neighborColor = colors[k * sampleImage.height + l];
                     const int neigborId = GetColorID(neighborColor, ruleset, colorMap);
-                    ruleset.AddConstraint(centerId, neigborId);
+                    ruleset.AddConstraint(centerId, neigborId, direction++);
                 }
             }
         }

@@ -2,6 +2,7 @@
 #include <bit>
 #include <vector>
 
+#include "Heap.hpp"
 #include "raylib.h"
 
 #include "Ruleset.hpp"
@@ -20,14 +21,6 @@ uint32_t Generator::AddConstraints(uint32_t oldContraints, uint32_t newConstrain
     return oldContraints & newConstraints;
 }
 
-bool Generator::Contains(const std::vector<int>& openSet, int value) {
-    for (int i : openSet) {
-        if (i == value) {
-            return true;
-        }
-    }
-    return false;
-}
 
 uint32_t Generator::ResolveContraints(uint32_t contraints) {
     int totalPossibilities = std::popcount(contraints);
@@ -53,20 +46,23 @@ uint32_t Generator::ResolveContraints(uint32_t contraints) {
 
 Image Generator::GenerateImage(const Ruleset& rules, int width, int height) {
     
-    std::vector<int> openSet; // stores index of next cells to solve
-    
     std::vector<bool> explored(width * height, false);
     std::vector<uint32_t> constraints(width * height, ~((~0) << rules.GetNumberOfObjects()));
     
     int startingPoint = RandomInteger(0, width * height - 1);
 
-    openSet.emplace_back(startingPoint);
+    Heap<int> openSet([constraints](const int& a, const int& b) -> bool {
+        return std::popcount(constraints[a]) > std::popcount(constraints[b]);
+    }); // stores index of next cells to solve
+    
+    // TODO: since item and unique id is the same, optimize the heap to reflect this
+    openSet.Push(startingPoint, startingPoint);
 
     // Constraint satisfaction
-    while (!openSet.empty()) {
-        const int cellIndex = openSet.back();
-        openSet.pop_back();
-
+    while (openSet.GetSize() > 0) {
+        const int cellIndex = openSet.TopItemID();
+        openSet.Pop();
+        
         constraints[cellIndex] = ResolveContraints(constraints[cellIndex]);
         
         if (constraints[cellIndex] == 0) continue;
@@ -82,16 +78,16 @@ Image Generator::GenerateImage(const Ruleset& rules, int width, int height) {
         const int boundMinX = (cellX - 1) > 0 ? (cellX - 1) : 0;
         const int boundMaxY = (cellY + 2) > height ? height : (cellY + 2);
         const int boundMaxX = (cellX + 2) > width ? width : (cellX + 2);
-            
+        
+        int direction = -1;
         for (int i = boundMinY; i < boundMaxY; ++i) {
             for (int j = boundMinX; j < boundMaxX; ++j) {
                 if (i == 0 && j == 0) continue;
+                direction++;
                 const int nextIndex = i * width + j;
                 if (explored[nextIndex]) continue;
-                constraints[nextIndex] = AddConstraints(constraints[nextIndex], rules.GetConstraints(type));
-                if (!Contains(openSet, nextIndex)) {
-                    openSet.emplace_back(nextIndex);
-                }
+                constraints[nextIndex] = AddConstraints(constraints[nextIndex], rules.GetConstraints(type, direction));
+                openSet.Push(nextIndex, nextIndex);
             }
         }
     }

@@ -3,8 +3,8 @@
 
 #include "Analyzer.hpp"
 
-#define WINDOW_W 700
-#define WINDOW_H 700
+#define WINDOW_W 800
+#define WINDOW_H 800
 #define WINDOW_N "Procedural Generation Constraint Satisfaction"
 
 Analyzer sampleAnalyzer;
@@ -18,7 +18,7 @@ void Init() {
     SetTargetFPS(60);
 
 
-    Ruleset ruleset = sampleAnalyzer.AnalyzeImage("../assets/sample1.png");
+    Ruleset ruleset = sampleAnalyzer.AnalyzeImage("../assets/sample2.png");
 
 
     Image generatedImage = generator.GenerateImage(ruleset, 100, 100);
@@ -45,10 +45,10 @@ void Render() {
     BeginDrawing();
     ClearBackground(BLACK);
 
-    DrawFPS(0, 0);
+    //DrawFPS(0, 0);
 
     // Draw
-    DrawTexture(generatedTexture, 0, 0, WHITE);
+    DrawTextureEx(generatedTexture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
 
     EndDrawing();
 }

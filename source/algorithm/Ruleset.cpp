@@ -10,12 +10,12 @@ void Ruleset::AddColor(const Color& color){
     colors[numObjects++] = color;
 }
 
-void Ruleset::AddConstraint(int id, int other) {
-    constraints[id] |= (1 << other);
+void Ruleset::AddConstraint(int id, int other, int direction) {
+    constraints[id * 8 + direction] |= (1 << other);
 }
 
-uint32_t Ruleset::GetConstraints(int id) const {
-    return constraints[id];
+uint32_t Ruleset::GetConstraints(int id, int direction) const {
+    return constraints[id * 8 + direction];
 }
 
 int Ruleset::GetNumberOfObjects() const {
