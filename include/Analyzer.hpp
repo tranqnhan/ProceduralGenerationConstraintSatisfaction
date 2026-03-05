@@ -19,6 +19,6 @@ private:
     int GetModulusSpaceCoord(int coord, int maxCoord) const;
     void AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, std::vector<Color>& composites);
 
-    void DebugGenerateTexture(const std::vector<Color> composites, int length);
+    void DebugGenerateTexture(const std::vector<Color> composites, int width, int height, int length);
 };
 

@@ -45,7 +45,7 @@ void Render() {
     //DrawFPS(0, 0);
 
     // Draw
-    DrawTextureEx(sampleAnalyzer.debugTexture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
+    DrawTextureEx(sampleAnalyzer.debugTexture, Vector2{.x = 0, .y = 0}, 0, 16, WHITE);
     
     EndDrawing();
 }
