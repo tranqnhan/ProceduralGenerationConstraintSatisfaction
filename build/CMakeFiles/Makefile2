@@ -85,12 +85,12 @@ clean: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/clean
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=1,2,3 "Built target ProceduralGenerationConstraintSatisfaction"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=1,2,3,4 "Built target ProceduralGenerationConstraintSatisfaction"
 .PHONY : CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles 0
 .PHONY : CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/rule
@@ -102,7 +102,7 @@ ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConst
 # codegen rule for target.
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=1,2,3 "Finished codegen for target ProceduralGenerationConstraintSatisfaction"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target ProceduralGenerationConstraintSatisfaction"
 .PHONY : CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/codegen
 
 # clean rule for target.

@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "CompositeTree.hpp"
 #include "raylib.h"
 
 #include "Ruleset.hpp"
@@ -17,8 +18,8 @@ public:
 
 private:
     int GetModulusSpaceCoord(int coord, int maxCoord) const;
-    void AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, std::vector<Color>& composites);
+    void AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, CompositeTree& composites);
 
-    void DebugGenerateTexture(const std::vector<Color> composites, int width, int height, int length);
+    void DebugGenerateTexture(const CompositeTree& compositeTree, int width, int height, int length);
 };
 

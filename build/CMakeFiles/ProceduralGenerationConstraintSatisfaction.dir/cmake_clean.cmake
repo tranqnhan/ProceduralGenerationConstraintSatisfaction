@@ -4,6 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o.d"
   "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o"
   "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o.d"
+  "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o"
+  "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o.d"
   "ProceduralGenerationConstraintSatisfaction"
   "ProceduralGenerationConstraintSatisfaction.pdb"
 )

@@ -86,10 +86,24 @@ CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analy
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/algorithm/Analyzer.cpp -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.s
 
+CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/flags.make
+CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o: /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/data/CompositeTree.cpp
+CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o -MF CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o.d -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/data/CompositeTree.cpp
+
+CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/data/CompositeTree.cpp > CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.i
+
+CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/data/CompositeTree.cpp -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.s
+
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/flags.make
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o: /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/Main.cpp
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o -MF CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o.d -o CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o -c /home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/source/Main.cpp
 
 CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.i: cmake_force
@@ -103,18 +117,20 @@ CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.s: cma
 # Object files for target ProceduralGenerationConstraintSatisfaction
 ProceduralGenerationConstraintSatisfaction_OBJECTS = \
 "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o" \
+"CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o" \
 "CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o"
 
 # External object files for target ProceduralGenerationConstraintSatisfaction
 ProceduralGenerationConstraintSatisfaction_EXTERNAL_OBJECTS =
 
 ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.o
+ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o
 ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/Main.cpp.o
 ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make
 ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/compiler_depend.ts
 ProceduralGenerationConstraintSatisfaction: /usr/lib/libraylib.so
 ProceduralGenerationConstraintSatisfaction: CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable ProceduralGenerationConstraintSatisfaction"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/memoryarrays/Documents/procedural-generation-constraint-satisfaction/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ProceduralGenerationConstraintSatisfaction"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

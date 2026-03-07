@@ -4,8 +4,19 @@
 
 #include <cstdint>
 #include <vector>
+#include <array>
 
-#include "raylib.h"
+class Tile {
+public:
+    Tile(uint32_t color);
+    void AddAdjacentTile(int adjacentTileId, int direction);
+
+private:
+    uint32_t color;
+    std::array<std::vector<int>, 4> adjacentTiles;
+    std::array<std::vector<int>, 4> frequencies;
+
+};
 
 
 class Ruleset {
@@ -13,19 +24,10 @@ public:
 
     Ruleset(int size);
 
-    void AddColor(const Color& color);
-    Color GetColor(int id) const; 
-    void AddConstraint(int id, int other, int direction);
-    uint32_t GetConstraints(int id, int direction) const;
-    int GetNumberOfObjects() const;
-    int GetConstraintArea() const;
-    int GetConstraintExpand() const;
+    // Returns the tile id
+    int AddTile(uint32_t color);
+    int AddAdjacentTile(int tileId, int adjacentTileId, int direction);
 
 private:
-    int area;
-    int expand;
-    int numObjects;
-    std::vector<Color> colors;
-    std::vector<uint32_t> constraints;
-
+    std::vector<Tile> tiles;
 };

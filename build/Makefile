@@ -184,6 +184,30 @@ source/algorithm/Analyzer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/algorithm/Analyzer.cpp.s
 .PHONY : source/algorithm/Analyzer.cpp.s
 
+source/data/CompositeTree.o: source/data/CompositeTree.cpp.o
+.PHONY : source/data/CompositeTree.o
+
+# target to build an object file
+source/data/CompositeTree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.o
+.PHONY : source/data/CompositeTree.cpp.o
+
+source/data/CompositeTree.i: source/data/CompositeTree.cpp.i
+.PHONY : source/data/CompositeTree.i
+
+# target to preprocess a source file
+source/data/CompositeTree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.i
+.PHONY : source/data/CompositeTree.cpp.i
+
+source/data/CompositeTree.s: source/data/CompositeTree.cpp.s
+.PHONY : source/data/CompositeTree.s
+
+# target to generate assembly for a file
+source/data/CompositeTree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/build.make CMakeFiles/ProceduralGenerationConstraintSatisfaction.dir/source/data/CompositeTree.cpp.s
+.PHONY : source/data/CompositeTree.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -200,6 +224,9 @@ help:
 	@echo "... source/algorithm/Analyzer.o"
 	@echo "... source/algorithm/Analyzer.i"
 	@echo "... source/algorithm/Analyzer.s"
+	@echo "... source/data/CompositeTree.o"
+	@echo "... source/data/CompositeTree.i"
+	@echo "... source/data/CompositeTree.s"
 .PHONY : help
 
 

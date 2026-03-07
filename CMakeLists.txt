@@ -16,9 +16,10 @@ add_executable(ProceduralGenerationConstraintSatisfaction)
 target_include_directories(ProceduralGenerationConstraintSatisfaction PUBLIC include library/include)
 
 target_link_libraries(ProceduralGenerationConstraintSatisfaction raylib)
-target_compile_options(ProceduralGenerationConstraintSatisfaction PRIVATE -O2)
+target_compile_options(ProceduralGenerationConstraintSatisfaction PRIVATE -g)
 
 target_sources(ProceduralGenerationConstraintSatisfaction PRIVATE
     source/algorithm/Analyzer.cpp
+    source/data/CompositeTree.cpp
     source/Main.cpp
 )
