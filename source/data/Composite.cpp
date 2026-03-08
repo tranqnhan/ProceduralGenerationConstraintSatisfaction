@@ -1,30 +1,28 @@
-#include "CompositeTree.hpp"
+#include "Composite.hpp"
 
-#include <cstdio>
-
-void CompositeTree::AddKernel(const std::vector<uint32_t>& kernel) {
+void Composite::AddKernel(const std::vector<uint32_t>& kernel) {
     const int kernelIndex = IsKernelExists(kernel);
     
     if (kernelIndex >= 0) {
-        frequencies[kernelIndex]++;
+        globalFrequencies[kernelIndex]++;
         return;
     }
 
-    std::vector<PixelLeaf> leafs;
+    std::vector<Item> leafs;
     leafs.resize(kernel.size());
     for (int i = 0; i < kernel.size(); ++i) {
         leafs[i].color = kernel[i];
     }
 
-    branches.emplace_back(std::move(leafs), frequencies.size());
-    frequencies.emplace_back(1);
+    branches.emplace_back(std::move(leafs), globalFrequencies.size());
+    globalFrequencies.emplace_back(1);
 }
 
-int CompositeTree::GetFrequency(int kernelBranch) const {
-    return frequencies[kernelBranch];
+int Composite::GetFrequency(int kernelBranch) const {
+    return globalFrequencies[kernelBranch];
 }
 
-int CompositeTree::IsKernelExists(const std::vector<uint32_t>& kernel) {
+int Composite::IsKernelExists(const std::vector<uint32_t>& kernel) {
     for (int i = 0; i < branches.size(); ++i) {
         if (kernel.size() != branches[i].leafs.size()) continue;
         int j;
@@ -42,6 +40,6 @@ int CompositeTree::IsKernelExists(const std::vector<uint32_t>& kernel) {
 }
 
 
-const std::vector<KernelBranch>& CompositeTree::GetBranches() const {
+const std::vector<Kernel>& Composite::GetBranches() const {
     return this->branches;
 }

@@ -1,12 +1,10 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
-#include <unordered_map>
 
-#include "CompositeTree.hpp"
 #include "raylib.h"
 
+#include "Composite.hpp"
 #include "Ruleset.hpp"
 
 class Analyzer {
@@ -18,8 +16,8 @@ public:
 
 private:
     int GetModulusSpaceCoord(int coord, int maxCoord) const;
-    void AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, CompositeTree& composites);
+    void AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, Composite& composites);
 
-    void DebugGenerateTexture(const CompositeTree& compositeTree, int width, int height, int length);
+    void DebugGenerateTexture(const Composite& compositeTree, int width, int height, int length);
 };
 

@@ -1,7 +1,8 @@
 #include <vector>
 
-#include "CompositeTree.hpp"
 #include "raylib.h"
+
+#include "Composite.hpp"
 
 #include "Analyzer.hpp"
 
@@ -15,7 +16,7 @@ int Analyzer::GetModulusSpaceCoord(int coord, int maxCoord) const {
     return coord;
 }
 
-void Analyzer::AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, CompositeTree& compositeTree) {
+void Analyzer::AddKernelComposite(int x, int y, int width, int height, int length, Color *colors, Composite& compositeTree) {
     // Kernels
     std::vector<uint32_t> kernel;
 
@@ -42,7 +43,7 @@ void Analyzer::AnalyzeImage(const std::string &imageFile, int length) {
     const int height = sampleImage.height;
     const int width = sampleImage.width;
 
-    CompositeTree compositeTree;
+    Composite compositeTree;
     
     for (int i = -length + 1; i < height; ++i) {
         for (int j = -length + 1; j < width; ++j) {
@@ -55,7 +56,7 @@ void Analyzer::AnalyzeImage(const std::string &imageFile, int length) {
     DebugGenerateTexture(compositeTree, width, height, length);
 }
 
-void Analyzer::DebugGenerateTexture(const CompositeTree& compositeTree, int width, int height, int length) {
+void Analyzer::DebugGenerateTexture(const Composite& compositeTree, int width, int height, int length) {
     //Debugging
     const int debugImageWidth = (width + length - 1) * length;
     const int debugImageHeight = (height + length - 1) * length;
@@ -63,23 +64,10 @@ void Analyzer::DebugGenerateTexture(const CompositeTree& compositeTree, int widt
     debugImage = GenImageColor(debugImageWidth, debugImageHeight, WHITE);
     Color *debugColors = (Color *) debugImage.data;
     
-    const std::vector<KernelBranch>& kernels = compositeTree.GetBranches();
+    const std::vector<Kernel>& kernels = compositeTree.GetBranches();
 
     int atX = 0;
     int atY = 0;
-
-    // for (int j = 0; j < debugImageHeight; j += length) {
-    //     for (int k = 0; k < (debugImageWidth * length); k += (length * length)) {
-    //         for (int i = k; i < k + (length * length); ++i) {
-    //             const Color colorAt = composites[j * debugImageWidth + i];
-    //             const int x = ((i - k) % length) + atX;
-    //             const int y = int((i - k) / length) + atY;
-    //             debugColors[y * debugImageWidth + x] = colorAt;
-    //         }
-    //         atX += length;
-    //     }
-    //     atY += length - 1;
-    // }
 
     for (int k = 0; k < kernels.size(); ++k) {
         for (int i = 0; i < length; ++i) {

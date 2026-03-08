@@ -4,26 +4,26 @@
 #include <vector>
 
 
-struct PixelLeaf {
+struct Item {
     uint32_t color;
     int sideBranch;
 
-    PixelLeaf(uint32_t color, int sideBranch = -1) {
+    Item(uint32_t color, int sideBranch = -1) {
         this->color = color;
         this->sideBranch = sideBranch;
     };
 
-    PixelLeaf() {
+    Item() {
         this->sideBranch = -1;
     };
 };
 
 
-struct KernelBranch {
-    std::vector<PixelLeaf> leafs;
+struct Kernel {
+    std::vector<Item> leafs;
     int frequencyIndex;
 
-    KernelBranch(std::vector<PixelLeaf>&& leafs, int frequencyIndex) {
+    Kernel(std::vector<Item>&& leafs, int frequencyIndex) {
         this->frequencyIndex = frequencyIndex;
         this->leafs = std::move(leafs);
     }
@@ -31,15 +31,15 @@ struct KernelBranch {
 
 
 // Datastructure to map the kernels to an integer (the order seen)
-class CompositeTree {
+class Composite {
 public:
     void AddKernel(const std::vector<uint32_t>& kernel);
     int GetFrequency(int kernelBranch) const;
-    const std::vector<KernelBranch>& GetBranches() const;
+    const std::vector<Kernel>& GetBranches() const;
 
 private:
-    std::vector<int> frequencies;
-    std::vector<KernelBranch> branches; 
+    std::vector<int> globalFrequencies;
+    std::vector<Kernel> branches; 
 
     // Returns index if kernel exists, -1 if not
     int IsKernelExists(const std::vector<uint32_t>& kernel); 
