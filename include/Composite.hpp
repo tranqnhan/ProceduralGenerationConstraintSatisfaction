@@ -2,44 +2,52 @@
 
 #include <cstdint>
 #include <vector>
+#include <array>
 
+#include "ankerl/unordered_dense.h"
 
-struct Item {
+#include "Ruleset.hpp"
+
+class Item {
+public:
     uint32_t color;
-    int sideBranch;
+    int sideKernel;
 
-    Item(uint32_t color, int sideBranch = -1) {
+    Item(uint32_t color, int sideKernel = -1) {
         this->color = color;
-        this->sideBranch = sideBranch;
+        this->sideKernel = sideKernel;
     };
 
     Item() {
-        this->sideBranch = -1;
+        this->sideKernel = -1;
     };
 };
 
 
-struct Kernel {
+class Kernel {
+public:
     std::vector<Item> leafs;
-    int frequencyIndex;
+    int globalFrequency;
+    std::array<ankerl::unordered_dense::map<int, int>, TileDirection::NUM_DIRECTIONS> adjacentKernelFrequencies;
 
-    Kernel(std::vector<Item>&& leafs, int frequencyIndex) {
-        this->frequencyIndex = frequencyIndex;
-        this->leafs = std::move(leafs);
-    }
+    Kernel(std::vector<Item>&& leafs);
+
+    void IncreaseGlobalFrequency();
+    int GetGlobalFrequency() const;
+
 };
 
 
 // Datastructure to map the kernels to an integer (the order seen)
 class Composite {
 public:
-    void AddKernel(const std::vector<uint32_t>& kernel);
-    int GetFrequency(int kernelBranch) const;
+    int AppendKernel(const std::vector<uint32_t>& kernel);
+    int GetGlobalFrequency(int kernelId) const;
     const std::vector<Kernel>& GetBranches() const;
+    Kernel& GetKernel(int kernelId);
 
 private:
-    std::vector<int> globalFrequencies;
-    std::vector<Kernel> branches; 
+    std::vector<Kernel> kernels;
 
     // Returns index if kernel exists, -1 if not
     int IsKernelExists(const std::vector<uint32_t>& kernel); 

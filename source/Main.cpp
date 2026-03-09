@@ -6,7 +6,7 @@
 #define WINDOW_H 800
 #define WINDOW_N "Procedural Generation Constraint Satisfaction"
 
-Analyzer sampleAnalyzer;
+Processor sampleAnalyzer;
 //Generator generator;
 
 // Main loop initialization

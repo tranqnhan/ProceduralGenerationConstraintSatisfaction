@@ -1,11 +1,30 @@
 #include "Composite.hpp"
 
-void Composite::AddKernel(const std::vector<uint32_t>& kernel) {
+Kernel::Kernel(std::vector<Item>&& leafs){
+    this->leafs = std::move(leafs);
+    this->globalFrequency = 1;
+}
+
+
+void Kernel::IncreaseGlobalFrequency(){
+    this->globalFrequency++;
+}
+
+
+int Kernel::GetGlobalFrequency() const {
+    return this->globalFrequency;
+}
+
+Kernel& Composite::GetKernel(int kernelId) {
+    return this->kernels[kernelId];
+}
+
+int Composite::AppendKernel(const std::vector<uint32_t>& kernel) {
     const int kernelIndex = IsKernelExists(kernel);
     
     if (kernelIndex >= 0) {
-        globalFrequencies[kernelIndex]++;
-        return;
+        this->kernels[kernelIndex].IncreaseGlobalFrequency();
+        return kernelIndex;
     }
 
     std::vector<Item> leafs;
@@ -14,24 +33,27 @@ void Composite::AddKernel(const std::vector<uint32_t>& kernel) {
         leafs[i].color = kernel[i];
     }
 
-    branches.emplace_back(std::move(leafs), globalFrequencies.size());
-    globalFrequencies.emplace_back(1);
+    kernels.emplace_back(std::move(leafs));
+
+    return kernels.size() - 1;
 }
 
-int Composite::GetFrequency(int kernelBranch) const {
-    return globalFrequencies[kernelBranch];
+
+int Composite::GetGlobalFrequency(int kernelIndex) const {
+    return kernels[kernelIndex].GetGlobalFrequency();
 }
+
 
 int Composite::IsKernelExists(const std::vector<uint32_t>& kernel) {
-    for (int i = 0; i < branches.size(); ++i) {
-        if (kernel.size() != branches[i].leafs.size()) continue;
+    for (int i = 0; i < kernels.size(); ++i) {
+        if (kernel.size() != kernels[i].leafs.size()) continue;
         int j;
-        for (j = 0; j < branches[i].leafs.size(); ++j) {
-            if (branches[i].leafs[j].color != kernel[j]) {
+        for (j = 0; j < kernels[i].leafs.size(); ++j) {
+            if (kernels[i].leafs[j].color != kernel[j]) {
                 break;
             }
         }
-        if (j == branches[i].leafs.size()) {
+        if (j == kernels[i].leafs.size()) {
             return i;
         }
     }
@@ -41,5 +63,5 @@ int Composite::IsKernelExists(const std::vector<uint32_t>& kernel) {
 
 
 const std::vector<Kernel>& Composite::GetBranches() const {
-    return this->branches;
+    return this->kernels;
 }
