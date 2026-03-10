@@ -15,7 +15,7 @@ void Init() {
     InitWindow(WINDOW_W, WINDOW_H, WINDOW_N);
     SetTargetFPS(60);
 
-    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample1.png", 3);
+    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample1.png", 1);
 
     generator.DebugInit(ruleset, 100, 100);
 }

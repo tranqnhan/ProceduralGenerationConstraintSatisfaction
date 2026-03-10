@@ -26,7 +26,7 @@ void Cell::Intersect(const Ruleset& ruleset, const std::vector<AdjacentTile>& po
     int a = 0;
     int b = 0;
 
-    while (a < this->tilePossibilities.size() && b < possibilities.size()) {
+    while (b < this->tilePossibilities.size() && a < possibilities.size()) {
         const int aTileId = possibilities[a].GetTileId();
         const int bTileId = this->tilePossibilities[b].GetTileId();
 
