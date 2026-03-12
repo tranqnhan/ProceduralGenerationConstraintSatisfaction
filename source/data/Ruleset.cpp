@@ -1,30 +1,6 @@
-#include "Ruleset.hpp"
-
-#include <algorithm>
 #include <cstdint>
-#include <cstdlib>
-#include <iostream>
 
-AdjacentTile::AdjacentTile() {
-    this->id = 0;
-    this->localFrequency = 0;
-}
-
-
-AdjacentTile::AdjacentTile(int id, int localFrequency) {
-    this->id = id;
-    this->localFrequency = localFrequency;
-}
-
-
-int AdjacentTile::GetTileId() const {
-    return this->id;
-}
-
-
-int AdjacentTile::GetLocalFrequency() const {
-    return this->localFrequency;
-}
+#include "Ruleset.hpp"
 
 
 Tile::Tile() {
@@ -33,7 +9,7 @@ Tile::Tile() {
 }
 
 
-Tile::Tile(uint32_t color, int globalFrequency) {
+Tile::Tile(uint32_t color, int globalFrequency, int numberOfTiles) {
     this->color = color;
     this->globalFrequency = globalFrequency;
 }
@@ -58,15 +34,12 @@ void Tile::SetGlobalFrequency(int globalFrequency) {
 }
 
 
-void Tile::SetAdjacentTiles(std::vector<AdjacentTile>&& adjacentTiles, TileDirection direction) {
-    std::sort(adjacentTiles.begin(), adjacentTiles.end(), [](const AdjacentTile& a, const AdjacentTile b) {
-        return a.GetTileId() < b.GetTileId();
-    });
-    this->adjacentTiles[direction] = std::move(adjacentTiles);
+void Tile::SetAdjacentTiles(std::vector<uint64_t>&& adjacentTilesInDirection, int direction) {
+    this->adjacentTiles[direction] = std::move(adjacentTilesInDirection);
 }
 
 
-const std::vector<AdjacentTile>& Tile::GetAdjacentTiles(TileDirection direction) const {
+const std::vector<uint64_t>& Tile::GetAdjacentTiles(int direction) const {
     return this->adjacentTiles[direction];
 }
 
@@ -81,7 +54,7 @@ Ruleset::Ruleset(int numTiles) {
 }
 
 
-int Ruleset::GetNumTiles() const {
+int Ruleset::GetNumberOfTiles() const {
     return this->tiles.size();
 }
 
@@ -101,25 +74,14 @@ void Ruleset::SetTileFrequency(int tileId, int globalFrequency) {
 }
 
 
-void Ruleset::SetAdjacentTiles(int tileId, TileDirection direction, const std::vector<int>& adjacentTileIds, const std::vector<int>& adjacentTileFrequencies) {
-    if (tileId >= this->tiles.size()) {
-        std::cerr << "Tile " << tileId << " index is out of bound of " << this->tiles.size() << "." << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+void Ruleset::SetAdjacentTiles(int tileId, int direction, const std::vector<int>& adjacentTileIds, const std::vector<int>& adjacentTileFrequencies) {
 
-    if (adjacentTileIds.size() != adjacentTileFrequencies.size()) {
-        std::cerr << "Adjacent arrays' sizes do not match." << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+    std::vector<uint64_t> adjacentTiles(int(this->GetNumberOfTiles() / 64) + 1);
 
-    std::vector<AdjacentTile> adjacentTiles(adjacentTileIds.size());
-
-    for (int i = 0; i < adjacentTiles.size(); ++i) {
-        if (adjacentTileIds[i] >= this->tiles.size()) {
-            std::cerr << "Adjacent tile " << adjacentTileIds[i] << " index is out of bound of " << this->tiles.size() << "." << std::endl;
-            std::exit(EXIT_FAILURE);
-        }
-        adjacentTiles[i] = AdjacentTile(adjacentTileIds[i], adjacentTileFrequencies[i]);
+    for (const int tileId : adjacentTileIds) {
+        const int valueIndex = int(tileId / 64);
+        const int bitIndex = tileId - (valueIndex * 64);
+        adjacentTiles[valueIndex] |= (uint64_t(1) << (63 - bitIndex));
     } 
 
     this->tiles[tileId].SetAdjacentTiles(std::move(adjacentTiles), direction);
@@ -131,7 +93,7 @@ const Tile& Ruleset::GetTile(int tileId) const {
 }
 
 
-const std::vector<AdjacentTile>& Ruleset::GetAdjacentTiles(int tileId, TileDirection direction) const {
+const std::vector<uint64_t>& Ruleset::GetAdjacentTiles(int tileId, int direction) const {
     return this->tiles[tileId].GetAdjacentTiles(direction);
 }
 

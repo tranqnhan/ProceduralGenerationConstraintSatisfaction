@@ -106,12 +106,12 @@ Ruleset Processor::AnalyzeImage(const std::string &imageFile, int length) {
     // Translate to Ruleset
     Ruleset ruleset(composite.GetNumKernels());
     const std::vector<Kernel>& kernels = composite.GetKernels();
-    TileDirection directions[4] = {NORTH, SOUTH, WEST, EAST};
+
     for (int i = 0; i < composite.GetNumKernels(); ++i) {
         const Kernel& kernel = kernels[i];
         ruleset.SetTileFrequency(i, kernel.GetGlobalFrequency());
         ruleset.SetTileColor(i, kernel.leafs[0]);
-        for (TileDirection d : directions) {
+        for (int d = 0; d < TileDirection::NUM_DIRECTIONS; ++i) {
             const int adjacentSize = kernel.adjacentKernelFrequencies[d].size();
             std::vector<int> adjacentTileIds(adjacentSize);
             std::vector<int> adjacentTileFrequencies(adjacentSize);
@@ -124,6 +124,8 @@ Ruleset Processor::AnalyzeImage(const std::string &imageFile, int length) {
             ruleset.SetAdjacentTiles(i, d, adjacentTileIds, adjacentTileFrequencies);
         }
     }
+
+    std::printf("num tiles %i\n", ruleset.GetNumberOfTiles());
     
     //DebugGenerateTexture(composite, width, height, length);
 

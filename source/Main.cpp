@@ -20,17 +20,17 @@ void Init() {
     InitWindow(WINDOW_W, WINDOW_H, WINDOW_N);
     SetTargetFPS(60);
 
-    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample7.png", 4);
+    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample9.png", 3);
 
-    generator.DebugInit(ruleset, 100, 100);
+    generator.Init(ruleset, 40, 40);
 }
 
 
 // Main loop update
 void Update(float deltaTime) {
-    const int numIterations = 10;
+    const int numIterations = 1;
     for (int i = 0; i < numIterations; ++i) {
-        generator.DebugNext();
+        generator.Next();
     }
 }
 
@@ -38,7 +38,7 @@ void Update(float deltaTime) {
 // Main loop input
 void Input() {
     if (IsKeyPressed(KEY_SPACE)) {
-        generator.DebugNext();
+        generator.Next();
     }
 }
 
@@ -48,11 +48,12 @@ void Render() {
     BeginDrawing();
     ClearBackground(BLACK);
 
-    //DrawFPS(0, 0);
 
     // Draw
     DrawTextureEx(generator.debugTexture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
     
+    //DrawFPS(0, 0);
+
     EndDrawing();
 }
 

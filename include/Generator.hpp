@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <queue>
 
 #include "raylib.h"
 
@@ -10,17 +11,19 @@
 
 class Cell {
 public:
-    Cell(const Ruleset& ruleset, const std::vector<AdjacentTile>& initialPossibilities);
+    Cell(const Ruleset& ruleset);
 
-    void Intersect(const Ruleset& ruleset, const std::vector<AdjacentTile>& possibilities);
+    bool Intersect(const std::vector<uint64_t>& otherPossibilities);
     int Collapse();
     int GetEntropy() const;
-    int GetValue() const;
+    int GetSolvedTile() const;
+
+    const std::vector<uint64_t>& GetTilePossibilities() const;
 
 private:
-    std::vector<AdjacentTile> tilePossibilities;
+    std::vector<uint64_t> tilePossibilities;
     int globalFrequency;
-    int tileId;
+    int solvedTileId;
 };
 
 
@@ -30,28 +33,27 @@ public:
 
     Image GenerateImage(const Ruleset& rule, int width, int height);
 
-    // TODO: for debug purposes
     Image debugImage;
     Texture2D debugTexture;
-    Ruleset debugRules;
-    int debugWidth; 
-    int debugHeight;
+    Ruleset ruleset;
+    int width; 
+    int height;
 
-    std::vector<bool> debugExplored;
-    std::vector<Cell> debugCells;
+    std::vector<Cell> cells;
 
-    Heap<int> debugOpenSet = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
+    Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
        return entropyA > entropyB;
     }); // stores index of next cells to solve
 
     // std::vector<std::pair<int, int>> debugOpenSet;
 
-    void DebugInit(const Ruleset& rules, int width, int height);
-    void DebugNext();
-    void DebugPropagate(const Tile& tile, int coords);
-    void DebugExpandAdjacent(int x, int y, TileDirection direction, const Tile& tile);
+    void Init(const Ruleset& rules, int width, int height);
+    void Next();
 
-
+    void CompletePropagation(int beginCoordinates);
+    void Propagate(int coordinates, std::queue<int>& queueCoordinates, ankerl::unordered_dense::set<int>& propagatedCoordinates, const ankerl::unordered_dense::set<int>& exploredCoordinates);
+    void ExpandAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::queue<int>& queueCoordinates, ankerl::unordered_dense::set<int>& propagatedCoordinates, const ankerl::unordered_dense::set<int>& exploredCoordinates);
+    
 private:
     int GetEntropy(uint32_t constraints) const;
     uint32_t AddConstraints(uint32_t oldContraints, uint32_t newConstraints) const;
