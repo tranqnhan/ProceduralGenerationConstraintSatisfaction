@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cstdio>
 
 #include "Ruleset.hpp"
 
@@ -83,7 +84,7 @@ void Ruleset::SetAdjacentTiles(int tileId, int direction, const std::vector<int>
         const int bitIndex = tileId - (valueIndex * 64);
         adjacentTiles[valueIndex] |= (uint64_t(1) << (63 - bitIndex));
     } 
-
+    
     this->tiles[tileId].SetAdjacentTiles(std::move(adjacentTiles), direction);
 }
 

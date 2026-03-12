@@ -111,7 +111,7 @@ Ruleset Processor::AnalyzeImage(const std::string &imageFile, int length) {
         const Kernel& kernel = kernels[i];
         ruleset.SetTileFrequency(i, kernel.GetGlobalFrequency());
         ruleset.SetTileColor(i, kernel.leafs[0]);
-        for (int d = 0; d < TileDirection::NUM_DIRECTIONS; ++i) {
+        for (int d = 0; d < TileDirection::NUM_DIRECTIONS; ++d) {
             const int adjacentSize = kernel.adjacentKernelFrequencies[d].size();
             std::vector<int> adjacentTileIds(adjacentSize);
             std::vector<int> adjacentTileFrequencies(adjacentSize);

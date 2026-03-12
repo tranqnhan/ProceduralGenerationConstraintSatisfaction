@@ -1,8 +1,6 @@
-#include <algorithm>
 #include <cstdint>
 #include <bit>
 #include <queue>
-#include <utility>
 #include <vector>
 
 #include "Heap.hpp"
@@ -14,9 +12,14 @@
 
 
 Cell::Cell(const Ruleset& ruleset) {
-    this->tilePossibilities.resize(int(ruleset.GetNumberOfTiles() / 64), ~uint64_t(0));
+    this->tilePossibilities.resize(int(ruleset.GetNumberOfTiles() / 64) + 1, ~uint64_t(0));
+    uint64_t& lastTileSet = this->tilePossibilities.back();
+    lastTileSet <<= (64 - (ruleset.GetNumberOfTiles() % 64));
+    std::printf("%lb\n", lastTileSet);
+    
     this->globalFrequency = 0;
     this->solvedTileId = -1;
+    this->numberOfPossibleTiles = ruleset.GetNumberOfTiles();
 }
 
 
@@ -31,8 +34,10 @@ bool Cell::Intersect(const std::vector<uint64_t>& otherPossibilities) {
     }
 
     if (changes) {
+        this->numberOfPossibleTiles = 0;
         for (int i = 0; i < otherPossibilities.size(); ++i) {
             this->tilePossibilities[i] &= otherPossibilities[i];
+            this->numberOfPossibleTiles += std::popcount(this->tilePossibilities[i]);
         }
     }
 
@@ -48,6 +53,8 @@ int Cell::Collapse() {
         tilesCount[i] = tileCount;
         sumTiles += tileCount;
     }
+
+    if (sumTiles == 0) return -1;
 
     int result = XorshiftRandom::RandomInteger(1, sumTiles);
     
@@ -82,7 +89,7 @@ const std::vector<uint64_t>& Cell::GetTilePossibilities() const {
 
     
 int Cell::GetEntropy() const {
-
+    return this->numberOfPossibleTiles;
 }
 
 
@@ -128,80 +135,13 @@ uint32_t Generator::ResolveContraints(uint32_t contraints) {
 }
 
 
-Image Generator::GenerateImage(const Ruleset& rules, int width, int height) {
-    
-    // std::vector<bool> explored(width * height, false);
-    // std::vector<uint32_t> constraints(width * height, ~((~0) << rules.GetNumberOfObjects()));
-    
-    // int startingPoint = RandomInteger(0, width * height - 1);
-
-    // Heap<int> openSet([constraints](const int& a, const int& b) -> bool {
-    //     return std::popcount(constraints[a]) > std::popcount(constraints[b]);
-    // }); // stores index of next cells to solve
-    
-    // // TODO: since item and unique id is the same, optimize the heap to reflect this
-    // openSet.Push(startingPoint, startingPoint);
-
-    // // Constraint satisfaction
-    // while (openSet.GetSize() > 0) {
-    //     const int cellIndex = openSet.TopItemID();
-    //     openSet.Pop();
-        
-    //     constraints[cellIndex] = ResolveContraints(constraints[cellIndex]);
-        
-    //     if (constraints[cellIndex] == 0) continue;
-
-    //     const int type = std::countr_zero(constraints[cellIndex]);
-    //     explored[cellIndex] = true;
-
-    //     // Get neighbors
-    //     const int cellX = cellIndex % width;
-    //     const int cellY = cellIndex / height;
-
-    //     const int boundMinY = (cellY - 1) > 0 ? (cellY - 1) : 0;
-    //     const int boundMinX = (cellX - 1) > 0 ? (cellX - 1) : 0;
-    //     const int boundMaxY = (cellY + 2) > height ? height : (cellY + 2);
-    //     const int boundMaxX = (cellX + 2) > width ? width : (cellX + 2);
-        
-    //     int direction = -1;
-    //     for (int i = boundMinY; i < boundMaxY; ++i) {
-    //         for (int j = boundMinX; j < boundMaxX; ++j) {
-    //             if (i == cellY && j == cellX) continue;
-    //             direction++;
-    //             const int nextIndex = i * width + j;
-    //             if (explored[nextIndex]) continue;
-    //             constraints[nextIndex] = AddConstraints(constraints[nextIndex], rules.GetConstraints(type, direction));
-    //             openSet.Push(nextIndex, nextIndex);
-    //         }
-    //     }
-    // }
-
-
-    // // Generate image
-    Image generatedImage = GenImageColor(width, height, BLACK);
-
-    // for (int i = 0; i < width * height; ++i) {
-    //     if (!explored[i]) continue;
-    //     const int type = std::countr_zero(constraints[i]);
-    //     const int posX = i % width;
-    //     const int posY = i / height;
-        
-    //     ImageDrawPixel(&generatedImage, posX, posY, rules.GetColor(type));
-    // }
-
-
-    return generatedImage;
-
-}
-
-
 void Generator::Init(const Ruleset& rules, int width, int height) {
     this->ruleset = rules;
     this->width = width;
     this->height = height;
 
-    this->debugImage = GenImageColor(width, height, BLACK);
-    this->debugTexture = LoadTextureFromImage(debugImage);
+    this->image = GenImageColor(width, height, BLACK);
+    this->texture = LoadTextureFromImage(image);
 
     const Cell initialCell( this->ruleset);
 
@@ -211,6 +151,7 @@ void Generator::Init(const Ruleset& rules, int width, int height) {
 
     this->cellEntropyPriorityQueue.Push(0, initialCoords);
 }
+
 
 void Generator::Next() {
     if (this->cellEntropyPriorityQueue.GetSize() <= 0) return;
@@ -226,8 +167,8 @@ void Generator::Next() {
         const int cellX = currentCoordinates % width;
         const int cellY = currentCoordinates / height;
 
-        ImageDrawPixel(&debugImage, cellX, cellY, RED);
-        UpdateTexture(debugTexture, debugImage.data);
+        ImageDrawPixel(&image, cellX, cellY, RED);
+        UpdateTexture(texture, image.data);
         //std::printf("No possibilities on cell %i %i\n", cellX, cellY);
         return;
     }
@@ -244,10 +185,8 @@ void Generator::Next() {
         .a = 255
     };
 
-    ImageDrawPixel(&debugImage, cellX, cellY, color);
-    UpdateTexture(debugTexture, debugImage.data);
-
-
+    ImageDrawPixel(&image, cellX, cellY, color);
+    UpdateTexture(texture, image.data);
 
     // Propagation
     CompletePropagation(currentCoordinates);

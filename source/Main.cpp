@@ -20,7 +20,7 @@ void Init() {
     InitWindow(WINDOW_W, WINDOW_H, WINDOW_N);
     SetTargetFPS(60);
 
-    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample9.png", 3);
+    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample2.png", 3);
 
     generator.Init(ruleset, 40, 40);
 }
@@ -50,7 +50,7 @@ void Render() {
 
 
     // Draw
-    DrawTextureEx(generator.debugTexture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
+    DrawTextureEx(generator.texture, Vector2{.x = 0, .y = 0}, 0, 8, WHITE);
     
     //DrawFPS(0, 0);
 

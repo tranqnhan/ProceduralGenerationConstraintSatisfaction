@@ -24,6 +24,7 @@ private:
     std::vector<uint64_t> tilePossibilities;
     int globalFrequency;
     int solvedTileId;
+    int numberOfPossibleTiles;
 };
 
 
@@ -31,10 +32,8 @@ class Generator {
 public:
     Generator();
 
-    Image GenerateImage(const Ruleset& rule, int width, int height);
-
-    Image debugImage;
-    Texture2D debugTexture;
+    Image image;
+    Texture2D texture;
     Ruleset ruleset;
     int width; 
     int height;
