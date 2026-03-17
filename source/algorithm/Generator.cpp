@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cstdio>
 #include <vector>
 
 #include <raylib.h>
@@ -52,6 +53,8 @@ bool Cell::Intersect(const std::vector<uint64_t>& otherPossibilities) {
 
 
 int Cell::Collapse(const Ruleset& ruleset) {
+    if (this->resultTileId != SpecialCellType::Unexplored) return this->resultTileId;
+
     this->resultTileId = SpecialCellType::NoSolution;
 
     if (this->numberOfPossibleTiles == 0) return this->resultTileId;
@@ -94,32 +97,107 @@ int Cell::GetResultTile() const {
 }
 
 
-Generator::Generator() {
-    this->failed = false;
+Generator::Generator() {}
+
+
+void Generator::Init(const Ruleset& rules, int regionWidthAsPixels, int regionHeightAsPixels, int worldWidthAsRegions, int worldHeightAsRegions) {
+    this->ruleset = rules;
+    this->worldWidthAsPixels = regionWidthAsPixels * worldWidthAsRegions;
+    this->worldHeightAsPixels = regionHeightAsPixels * worldHeightAsRegions;
+
+    this->regionWidthAsPixels = regionWidthAsPixels;
+    this->regionHeightAsPixels = regionHeightAsPixels;
+    this->worldWidthAsRegions = worldWidthAsRegions;
+    this->worldHeightAsRegions = worldHeightAsRegions;
+
+    this->generatedImage = GenImageColor(this->worldWidthAsPixels, this->worldHeightAsPixels, BLACK);
+    this->generatedTexture = LoadTextureFromImage(this->generatedImage);
+
+    this->xRegionOfWorld = 0;
+    this->yRegionOfWorld = 0;
+    this->numberOfReset = 0;
+    this->maxNumberOfReset = 5;
+
+    const Cell initialCell( this->ruleset);
+    this->cells = std::vector<Cell>(this->worldWidthAsPixels * this->worldHeightAsPixels, initialCell);
+    this->regionsGenerated = std::vector<bool>(this->worldWidthAsRegions * this->worldHeightAsRegions, false);
+
+    this->BuildInitialRegion();
 }
 
 
-void Generator::Init(const Ruleset& rules, int chunkWidth, int chunkHeight, int numChunkWidth, int numChunkHeight) {
-    this->ruleset = rules;
-    this->width = chunkWidth * numChunkWidth;
-    this->height = chunkHeight * numChunkHeight;
+void Generator::BuildInitialRegion() {
+    const int pixelCoordsOfRegion = XorshiftRandom::RandomInteger(0, this->regionWidthAsPixels * this->regionHeightAsPixels - 1);
+    
+    const int xPixelOfRegion = pixelCoordsOfRegion % this->regionWidthAsPixels;
+    const int yPixelOfRegion = pixelCoordsOfRegion / this->regionHeightAsPixels;
+    
+    const int xPixelOfWorld = this->xRegionOfWorld * this->regionWidthAsPixels + xPixelOfRegion;
+    const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels + yPixelOfRegion;
 
-    this->image = GenImageColor(this->width, this->height, BLACK);
-    this->texture = LoadTextureFromImage(this->image);
+    this->cellEntropyPriorityQueue.Push(0, yPixelOfWorld * this->worldWidthAsPixels + xPixelOfWorld);
+}
 
-    const Cell initialCell( this->ruleset);
 
-    this->cells = std::vector<Cell>(this->width * this->height, initialCell);
+void Generator::BuildRegion() {
+    this->cellEntropyPriorityQueue.Clear();
 
-    const int initialCoords = XorshiftRandom::RandomInteger(0, this->width * this->height - 1);
+    const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
+    const int xPixelOfWorld = this->xRegionOfWorld * this->regionWidthAsPixels;
+    const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels;
+    printf("Building next region! %i %i \n", this->xRegionOfWorld, this->yRegionOfWorld);
 
-    this->cellEntropyPriorityQueue.Push(0, initialCoords);
+    if (this->xRegionOfWorld - 1 >= 0 && this->regionsGenerated[regionCoordsOfWorld - 1]) {
+        for (int y = yPixelOfWorld; y < (yPixelOfWorld + this->regionHeightAsPixels); ++y) {
+            const int coordsPixelOfWorld = y * this->worldWidthAsPixels + (xPixelOfWorld - 1);
+            this->cellEntropyPriorityQueue.Push(0, coordsPixelOfWorld);
+        }
+    }
+
+    if (this->xRegionOfWorld + 1 < this->worldWidthAsRegions && this->regionsGenerated[regionCoordsOfWorld + 1]) {
+        for (int y = yPixelOfWorld; y < (yPixelOfWorld + this->regionHeightAsPixels); ++y) {
+            const int coordsPixelOfWorld = y * this->worldWidthAsPixels + (xPixelOfWorld + 1);
+            this->cellEntropyPriorityQueue.Push(0, coordsPixelOfWorld);
+        }
+    }
+
+    if (this->yRegionOfWorld - 1 >= 0 && this->regionsGenerated[regionCoordsOfWorld - this->worldWidthAsRegions]) {
+        for (int x = xPixelOfWorld; x < (xPixelOfWorld + this->regionWidthAsPixels); ++x) {
+            const int coordsPixelOfWorld = (yPixelOfWorld - 1) * this->worldWidthAsPixels + x;
+            this->cellEntropyPriorityQueue.Push(0, coordsPixelOfWorld);
+        }
+    }
+
+    if (this->yRegionOfWorld + 1 >= 0 && this->regionsGenerated[regionCoordsOfWorld + this->worldWidthAsRegions]) {
+        for (int x = xPixelOfWorld; x < (xPixelOfWorld + this->regionWidthAsPixels); ++x) {
+            const int coordsPixelOfWorld = (yPixelOfWorld + 1) * this->worldWidthAsPixels + x;
+            this->cellEntropyPriorityQueue.Push(0, coordsPixelOfWorld);
+        }
+    }
+    
 }
 
 
 void Generator::Next() {
-    if (this->cellEntropyPriorityQueue.GetSize() <= 0 || this->failed) {
+    if (this->regionGenerationFailure) {
+        printf("Failed!\n");
         return;
+    }
+
+    if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
+        this->regionsGenerated[this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld] = true;
+        if (this->xRegionOfWorld < this->worldWidthAsRegions - 1) {
+            this->xRegionOfWorld++;
+
+            this->BuildRegion();
+        } else if (this->yRegionOfWorld < this->worldHeightAsRegions - 1) { 
+            this->xRegionOfWorld = 0;
+            this->yRegionOfWorld++;
+
+            this->BuildRegion();
+        } else {
+            return;
+        }
     }
 
     const int currentCoordinates = this->cellEntropyPriorityQueue.TopItemID();
@@ -128,24 +206,23 @@ void Generator::Next() {
     const int resultTileId = this->cells[currentCoordinates].Collapse(this->ruleset);
 
     if (resultTileId == SpecialCellType::NoSolution) {
-        const int cellX = currentCoordinates % width;
-        const int cellY = currentCoordinates / height;
-
-        ImageDrawPixel(&image, cellX, cellY, RED);
-        UpdateTexture(texture, image.data);
-        this->failed = true;
-
+        const int cellX = currentCoordinates % worldWidthAsPixels;
+        const int cellY = currentCoordinates / worldWidthAsPixels;
+        ImageDrawPixel(&generatedImage, cellX, cellY, RED);
+        UpdateTexture(generatedTexture, generatedImage.data);
+        
+        this->regionGenerationFailure = true;
         return;
     }
 
-    const int cellX = currentCoordinates % width;
-    const int cellY = currentCoordinates / width;
+    const int cellX = currentCoordinates % worldWidthAsPixels;
+    const int cellY = currentCoordinates / worldWidthAsPixels;
 
     const Tile& tile = this->ruleset.GetTile(resultTileId);
     const uint32_t compressedColor = tile.GetColor()[0];
 
-    ImageDrawPixel(&image, cellX, cellY, CompressColor::Decompress(compressedColor));
-    UpdateTexture(texture, image.data);
+    ImageDrawPixel(&generatedImage, cellX, cellY, CompressColor::Decompress(compressedColor));
+    UpdateTexture(generatedTexture, generatedImage.data);
 
     // Propagation
     CompletePropagation(currentCoordinates);
@@ -154,11 +231,11 @@ void Generator::Next() {
 
 void Generator::CompletePropagation(int beginCoordinates) {
     std::vector<int> queueCoordinates;
-    std::vector<bool> isInQueue(this->width * this->height);
+    std::vector<bool> isInQueue(this->worldWidthAsPixels * this->worldHeightAsPixels);
 
     queueCoordinates.emplace_back(beginCoordinates);
     
-    while (!queueCoordinates.empty() && !this->failed) {
+    while (!queueCoordinates.empty() && !this->regionGenerationFailure) {
         const int currentCoordinates = queueCoordinates.back();
         queueCoordinates.pop_back();
 
@@ -177,26 +254,31 @@ void Generator::Propagate(int coordinates,
 ) {
     const Cell& cell = this->cells[coordinates];
 
-    const int x = coordinates % this->width;
-    const int y = coordinates / this->width;
+    const int x = coordinates % this->worldWidthAsPixels;
+    const int y = coordinates / this->worldWidthAsPixels;
 
-    if (x + 1 < this->width) {
+    const int xPixelMinBound = this->xRegionOfWorld * this->regionWidthAsPixels;
+    const int xPixelMaxBound = xPixelMinBound + this->regionWidthAsPixels;
+    const int yPixelMinBound = this->yRegionOfWorld * this->regionHeightAsPixels;
+    const int yPixelMaxBound = yPixelMinBound + this->regionHeightAsPixels;
+
+    if (x + 1 < xPixelMaxBound) {
         const int adjacentCoordinates = coordinates + 1;
         this->ExpandAdjacent(adjacentCoordinates, TileDirection::EAST, cell, queueCoordinates, isInQueue);
     }
 
-    if (x - 1 >= 0) {
+    if (x - 1 >= xPixelMinBound) {
         const int adjacentCoordinates = coordinates - 1;
         this->ExpandAdjacent(adjacentCoordinates, TileDirection::WEST, cell, queueCoordinates, isInQueue);
     }
 
-    if (y + 1 < this->height) {
-        const int adjacentCoordinates = coordinates + this->width;
+    if (y + 1 < yPixelMaxBound) {
+        const int adjacentCoordinates = coordinates + this->worldWidthAsPixels;
         this->ExpandAdjacent(adjacentCoordinates, TileDirection::SOUTH, cell, queueCoordinates, isInQueue);
     }
 
-    if (y - 1 >= 0) {
-        const int adjacentCoordinates = coordinates - this->width;
+    if (y - 1 >= yPixelMinBound) {
+        const int adjacentCoordinates = coordinates - this->worldWidthAsPixels;
         this->ExpandAdjacent(adjacentCoordinates, TileDirection::NORTH, cell, queueCoordinates, isInQueue);
     }
 }
@@ -250,7 +332,7 @@ void Generator::ExpandAdjacent(int adjacentCoordinates,
     const int entropy = adjacentCell.GetEntropy();
     
     if (entropy == 0) {
-        this->failed = true;
+        this->regionGenerationFailure = true;
         return;
     }
     
@@ -272,7 +354,7 @@ const Cell& Generator::GetCell(int coordinates) const {
 
 
 void Generator::Render() {
-    DrawTextureEx(this->texture, Vector2{.x = 0, .y = 0}, 0, PIXEL_SCALE, WHITE);
+    DrawTextureEx(this->generatedTexture, Vector2{.x = 0, .y = 0}, 0, PIXEL_SCALE, WHITE);
 }
 
 
@@ -282,16 +364,16 @@ const Ruleset& Generator::GetRuleset() const {
 
 
 int Generator::GetWidth() const {
-    return this->width;
+    return this->worldWidthAsPixels;
 }
 
 
 int Generator::GetHeight() const {
-    return this->height;
+    return this->worldHeightAsPixels;
 }
 
 
 Generator::~Generator() {
-    UnloadImage(this->image);
-    UnloadTexture(this->texture);
+    UnloadImage(this->generatedImage);
+    UnloadTexture(this->generatedTexture);
 }

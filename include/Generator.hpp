@@ -52,20 +52,26 @@ public:
     ~Generator();
     
 private:
-    Image image;
-    Texture2D texture;
+    Image generatedImage;
+    Texture2D generatedTexture;
     Ruleset ruleset;
-    int width; 
-    int height;
+    int worldWidthAsPixels; 
+    int worldHeightAsPixels;
 
-    int chunkWidth;
-    int chunkHeight;
-    int numChunkWidth;
-    int numChunkHeight;
+    int regionWidthAsPixels;
+    int regionHeightAsPixels;
+    int worldWidthAsRegions;
+    int worldHeightAsRegions;
 
-    bool failed;
+    int xRegionOfWorld;
+    int yRegionOfWorld;
+    int numberOfReset;
+    int maxNumberOfReset;
+
+    bool regionGenerationFailure;
 
     std::vector<Cell> cells;
+    std::vector<bool> regionsGenerated;
 
     Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
        return entropyA <= entropyB;
@@ -74,4 +80,7 @@ private:
     void CompletePropagation(int beginCoordinates);
     void Propagate(int coordinates, std::vector<int>& queueCoordinates, std::vector<bool>& isInQueue);
     void ExpandAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::vector<int>& queueCoordinate, std::vector<bool>& isInQueue);
+    void BuildRegion();
+    void BuildInitialRegion();
+
 };

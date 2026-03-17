@@ -5,8 +5,6 @@
 
 #include "ankerl/unordered_dense.h"
 
-#include "XorshiftRandom.hpp"
-
 template<typename T>
 class Heap {
 public:
@@ -26,6 +24,8 @@ public:
     unsigned int GetSize() const {
         return size;
     }
+
+    void Clear();
 
     ~Heap();
 
@@ -158,6 +158,16 @@ void Heap<T>::Swap(unsigned int hida, unsigned int hidb) {
     this->id2hid.insert_or_assign(this->hid2id[hidb], hidb);
     this->id2hid.insert_or_assign(this->hid2id[hida], hida);
 }
+
+
+template<typename T>
+void Heap<T>::Clear() {
+    this->heap.clear();
+    this->hid2id.clear();
+    this->id2hid.clear();
+    this->size = 0;
+}
+
 
 template<typename T>
 Heap<T>::~Heap() {

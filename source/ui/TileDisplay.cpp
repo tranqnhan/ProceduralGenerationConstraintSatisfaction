@@ -10,6 +10,7 @@
 #include "Ruleset.hpp"
 #include "TileDisplay.hpp"
 
+
 TileDisplay::TileDisplay() {}
 
 
@@ -84,7 +85,7 @@ void TileDisplay::Update(const Generator& generator) {
 
         }
 
-        std::printf("coords %i tile id %i\n", coords, this->uiSelectTileId);
+        //std::printf("coords %i tile id %i\n", coords, this->uiSelectTileId);
 
         this->uiSelectCell = false;
     }
