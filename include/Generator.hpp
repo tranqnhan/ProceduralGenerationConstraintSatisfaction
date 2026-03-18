@@ -15,6 +15,14 @@ enum SpecialCellType {
 };
 
 
+enum GenerationState {
+    RegionSuccess,
+    RegionFailure,
+    WorldSuccess,
+    RegionInProgress
+};
+
+
 class Cell {
 public:
     Cell(const Ruleset& ruleset);
@@ -23,8 +31,8 @@ public:
     int Collapse(const Ruleset& ruleset);
     int GetEntropy() const;
     int GetResultTile() const;
-
     const std::vector<uint64_t>& GetTilePossibilities() const;
+    void Clear(const Ruleset& ruleset);
 
 private:
     std::vector<uint64_t> tilePossibilities;
@@ -65,13 +73,15 @@ private:
 
     int xRegionOfWorld;
     int yRegionOfWorld;
-    int numberOfReset;
-    int maxNumberOfReset;
 
-    bool regionGenerationFailure;
+    int numberOfReset;
+
+    GenerationState generationState;
 
     std::vector<Cell> cells;
-    std::vector<bool> regionsGenerated;
+    std::vector<bool> isRegionsGenerated;
+    std::vector<int> regionsGenerated;
+    int numberOfRegionsGenerated;
 
     Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
        return entropyA <= entropyB;
@@ -80,7 +90,9 @@ private:
     void CompletePropagation(int beginCoordinates);
     void Propagate(int coordinates, std::vector<int>& queueCoordinates, std::vector<bool>& isInQueue);
     void ExpandAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::vector<int>& queueCoordinate, std::vector<bool>& isInQueue);
-    void BuildRegion();
+    void BuildCurrentRegion();
     void BuildInitialRegion();
+    int GetNextRegion();
+    void ResetRegion(int xRegion, int yRegion);
 
 };
