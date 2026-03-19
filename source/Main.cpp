@@ -20,10 +20,10 @@ TileDisplay uiTileDisplay;
 
 // Main loop initialization
 void Init() {
+    SetTraceLogLevel(LOG_NONE);
     InitWindow(WINDOW_W, WINDOW_H, WINDOW_N);
     SetTargetFPS(60);
     HideCursor();
-
 
     Processor sampleProcessor;
 

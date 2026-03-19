@@ -80,7 +80,10 @@ private:
 
     std::vector<Cell> cells;
     std::vector<bool> isRegionsGenerated;
-    std::vector<int> regionsGenerated;
+    std::vector<int> regionsCoords;
+    std::vector<int> regionsFailures;
+    int indexRegionCoords;
+    
     int numberOfRegionsGenerated;
 
     Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
@@ -92,7 +95,8 @@ private:
     void ExpandAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::vector<int>& queueCoordinate, std::vector<bool>& isInQueue);
     void BuildCurrentRegion();
     void BuildInitialRegion();
-    int GetNextRegion();
+    void CompleteRegion();
+    void GenerateNextCell();
     void ResetRegion(int xRegion, int yRegion);
 
 };

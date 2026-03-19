@@ -133,6 +133,7 @@ void Generator::Init(const Ruleset& rules, int regionWidthAsPixels, int regionHe
     this->cells = std::vector<Cell>(this->worldWidthAsPixels * this->worldHeightAsPixels, initialCell);
     this->isRegionsGenerated = std::vector<bool>(this->worldWidthAsRegions * this->worldHeightAsRegions, false);
 
+
     this->BuildInitialRegion();
 }
 
@@ -147,6 +148,8 @@ void Generator::BuildInitialRegion() {
     const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels + yPixelOfRegion;
 
     this->cellEntropyPriorityQueue.Push(0, yPixelOfWorld * this->worldWidthAsPixels + xPixelOfWorld);
+
+    this->generationState = GenerationState::RegionInProgress;
 }
 
 
@@ -185,59 +188,11 @@ void Generator::BuildCurrentRegion() {
             this->cellEntropyPriorityQueue.Push(0, coordsPixelOfWorld);
         }
     }
+
+    this->generationState = GenerationState::RegionInProgress;
 }
 
-
-// States
-// Region Generation Failure
-// Region Currently Generating
-// Region Completed
-// World Completed
-
-
-int Generator::GetNextRegion() {
-
-}
-
-
-void Generator::Next() {
-    switch(this->generationState) {
-        case RegionFailure:
-            // handle failure
-            break;
-        case RegionInProgress:
-            //handle in progress
-            break;
-        case RegionSuccess:
-            // handle region success
-            break;
-        case WorldSuccess:
-            return;
-    }
-
-
-    if (this->regionGenerationFailure) {    
-        this->ResetRegion(, int yRegion)
-        return;
-    }
-
-    if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
-        const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
-        this->isRegionsGenerated[regionCoordsOfWorld] = true;
-        this->regionsGenerated.emplace_back(regionCoordsOfWorld);
-
-        if (this->xRegionOfWorld < this->worldWidthAsRegions - 1) {
-            this->xRegionOfWorld++;
-            this->BuildCurrentRegion();
-        } else if (this->yRegionOfWorld < this->worldHeightAsRegions - 1) { 
-            this->xRegionOfWorld = 0;
-            this->yRegionOfWorld++;
-            this->BuildCurrentRegion();
-        } else {
-            return;
-        }
-    }
-
+void Generator::GenerateNextCell() {
     const int currentCoordinates = this->cellEntropyPriorityQueue.TopItemID();
     this->cellEntropyPriorityQueue.Pop();
 
@@ -255,11 +210,48 @@ void Generator::Next() {
     // Propagation
     CompletePropagation(currentCoordinates);
 
-    if (this->cellEntropyPriorityQueue.GetSize() <= 0 && 
-        this->generationState != GenerationState::RegionFailure) {
-        this->generationState = GenerationState::RegionSuccess;
-    } else {
+    if (this->generationState != GenerationState::RegionFailure) {
+        if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
+            this->generationState = GenerationState::RegionSuccess;
+        } else {
+            this->generationState = GenerationState::RegionInProgress;
+        }
+    }
+}
+
+
+void Generator::CompleteRegion() {
+    const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
+    this->isRegionsGenerated[regionCoordsOfWorld] = true;
+    this->regionsCoords.emplace_back(regionCoordsOfWorld);
+
+    if (this->xRegionOfWorld < this->worldWidthAsRegions - 1) {
+        this->xRegionOfWorld++;
+        this->BuildCurrentRegion();
         this->generationState = GenerationState::RegionInProgress;
+    } else if (this->yRegionOfWorld < this->worldHeightAsRegions - 1) { 
+        this->xRegionOfWorld = 0;
+        this->yRegionOfWorld++;
+        this->BuildCurrentRegion();
+        this->generationState = GenerationState::RegionInProgress;
+    } else {
+        this->generationState = GenerationState::WorldSuccess;
+    }
+}
+
+void Generator::Next() {
+    switch(this->generationState) {
+        case RegionFailure:
+
+            break;
+        case RegionInProgress:
+            this->GenerateNextCell();
+            break;
+        case RegionSuccess:
+            this->CompleteRegion();
+            break;
+        case WorldSuccess:
+            return;
     }
 }
 
@@ -372,6 +364,11 @@ void Generator::ExpandAdjacent(int adjacentCoordinates,
     }
     
     this->cellEntropyPriorityQueue.Push(entropy, adjacentCoordinates);
+}
+
+
+void Generator::RollbackRegions() {
+
 }
 
 
