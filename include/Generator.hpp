@@ -1,44 +1,18 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
 #include <raylib.h>
 
 #include "Heap.hpp"
 #include "Ruleset.hpp"
-
-
-enum SpecialCellType {
-    NoSolution = -1,
-    Unexplored = -2
-};
-
+#include "Cell.hpp"
 
 enum GenerationState {
-    RegionSuccess,
+    RegionOnStandby,
     RegionFailure,
-    WorldSuccess,
-    RegionInProgress
-};
-
-
-class Cell {
-public:
-    Cell(const Ruleset& ruleset);
-
-    bool Intersect(const std::vector<uint64_t>& otherPossibilities);
-    int Collapse(const Ruleset& ruleset);
-    int GetEntropy() const;
-    int GetResultTile() const;
-    const std::vector<uint64_t>& GetTilePossibilities() const;
-    void Clear(const Ruleset& ruleset);
-
-private:
-    std::vector<uint64_t> tilePossibilities;
-    int globalFrequency;
-    int resultTileId;
-    int numberOfPossibleTiles;
+    RegionInProgress,
+    WorldSuccess
 };
 
 
@@ -74,17 +48,13 @@ private:
     int xRegionOfWorld;
     int yRegionOfWorld;
 
-    int numberOfReset;
-
     GenerationState generationState;
 
     std::vector<Cell> cells;
     std::vector<bool> isRegionsGenerated;
     std::vector<int> regionsCoords;
     std::vector<int> regionsFailures;
-    int indexRegionCoords;
-    
-    int numberOfRegionsGenerated;
+    int currentRegionId;
 
     Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
        return entropyA <= entropyB;
@@ -95,8 +65,9 @@ private:
     void ExpandAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::vector<int>& queueCoordinate, std::vector<bool>& isInQueue);
     void BuildCurrentRegion();
     void BuildInitialRegion();
-    void CompleteRegion();
+    void StartNextRegion();
     void GenerateNextCell();
-    void ResetRegion(int xRegion, int yRegion);
 
+    void BacktrackRegions();
+    void ResetRegion(int xRegion, int yRegion);
 };

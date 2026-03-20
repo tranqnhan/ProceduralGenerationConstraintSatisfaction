@@ -21,6 +21,7 @@ target_compile_options(ProceduralGenerationConstraintSatisfaction PRIVATE -g)
 target_sources(ProceduralGenerationConstraintSatisfaction PRIVATE
     source/algorithm/Processor.cpp
     source/algorithm/Generator.cpp
+    source/algorithm/Cell.cpp
     source/data/Ruleset.cpp
     source/data/Composite.cpp
     source/ui/TileDisplay.cpp

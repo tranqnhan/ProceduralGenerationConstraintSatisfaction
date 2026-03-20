@@ -12,103 +12,6 @@
 #include "Ruleset.hpp"
 #include "Generator.hpp"
 
-
-Cell::Cell(const Ruleset& ruleset) {
-    this->tilePossibilities.resize(ruleset.GetTile64Sets(), ~uint64_t(0));
-
-    uint64_t& tileSet = this->tilePossibilities.back();
-    tileSet <<= 64 - (ruleset.GetNumberOfTiles() % 64);
-
-    this->globalFrequency = 0;
-    this->resultTileId = SpecialCellType::Unexplored;
-    this->numberOfPossibleTiles = ruleset.GetNumberOfTiles();
-}
-
-
-bool Cell::Intersect(const std::vector<uint64_t>& otherPossibilities) {
-    int changedIndex = -1;
-    
-    for (int i = 0; i < otherPossibilities.size(); ++i) {
-        const uint64_t mask = this->tilePossibilities[i] & otherPossibilities[i];
-        if (this->tilePossibilities[i] != mask) {
-            this->tilePossibilities[i] = mask;
-            changedIndex = i + 1;
-            break;
-        }
-    }
-
-    if (changedIndex >= 0) {
-        for (int i = changedIndex; i < otherPossibilities.size(); ++i) {
-            this->tilePossibilities[i] &= otherPossibilities[i];
-        }
-
-        this->numberOfPossibleTiles = 0;
-        for (const uint64_t& tileSet : this->tilePossibilities) {
-            this->numberOfPossibleTiles += std::popcount(tileSet);
-        }
-    }
-
-    return changedIndex >= 0;
-}
-
-
-int Cell::Collapse(const Ruleset& ruleset) {
-    if (this->resultTileId != SpecialCellType::Unexplored) return this->resultTileId;
-
-    this->resultTileId = SpecialCellType::NoSolution;
-
-    if (this->numberOfPossibleTiles == 0) return this->resultTileId;
-
-    const std::vector<int> tileIds = BitMath::GetSetPositions(this->tilePossibilities);
-
-    std::vector<int> globalFrequencies(tileIds.size());
-
-    int sumGlobalFrequencies = 0;
-    for (int i = 0; i < tileIds.size(); ++i) {
-        sumGlobalFrequencies += ruleset.GetTileFrequency(tileIds[i]);
-        globalFrequencies[i] = sumGlobalFrequencies;
-    }
-
-    int result = XorshiftRandom::RandomInteger(0, sumGlobalFrequencies);
-    
-    for (int i = 0; i < globalFrequencies.size(); ++i) {
-        if (result <= globalFrequencies[i]) {
-            this->resultTileId = tileIds[i];
-            break;
-        }
-    }
-
-    return this->resultTileId;
-}
-
-
-const std::vector<uint64_t>& Cell::GetTilePossibilities() const {
-    return this->tilePossibilities;
-}
-
-    
-int Cell::GetEntropy() const {
-    return this->numberOfPossibleTiles;
-}
-
-
-int Cell::GetResultTile() const {
-    return this->resultTileId;
-}
-
-
-void Cell::Clear(const Ruleset& ruleset) {
-    this->tilePossibilities.resize(ruleset.GetTile64Sets(), ~uint64_t(0));
-
-    uint64_t& tileSet = this->tilePossibilities.back();
-    tileSet <<= 64 - (ruleset.GetNumberOfTiles() % 64);
-
-    this->globalFrequency = 0;
-    this->resultTileId = SpecialCellType::Unexplored;
-    this->numberOfPossibleTiles = ruleset.GetNumberOfTiles();
-}
-
-
 Generator::Generator() {}
 
 
@@ -125,20 +28,21 @@ void Generator::Init(const Ruleset& rules, int regionWidthAsPixels, int regionHe
     this->generatedImage = GenImageColor(this->worldWidthAsPixels, this->worldHeightAsPixels, BLACK);
     this->generatedTexture = LoadTextureFromImage(this->generatedImage);
 
-    this->xRegionOfWorld = 0;
+    this->xRegionOfWorld = -1;
     this->yRegionOfWorld = 0;
-    this->numberOfReset = 0;
+    this->currentRegionId = -1;
 
     const Cell initialCell( this->ruleset);
     this->cells = std::vector<Cell>(this->worldWidthAsPixels * this->worldHeightAsPixels, initialCell);
     this->isRegionsGenerated = std::vector<bool>(this->worldWidthAsRegions * this->worldHeightAsRegions, false);
 
-
-    this->BuildInitialRegion();
+    this->generationState = GenerationState::RegionOnStandby;
 }
 
 
 void Generator::BuildInitialRegion() {
+    this->cellEntropyPriorityQueue.Clear();
+
     const int pixelCoordsOfRegion = XorshiftRandom::RandomInteger(0, this->regionWidthAsPixels * this->regionHeightAsPixels - 1);
     
     const int xPixelOfRegion = pixelCoordsOfRegion % this->regionWidthAsPixels;
@@ -148,8 +52,6 @@ void Generator::BuildInitialRegion() {
     const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels + yPixelOfRegion;
 
     this->cellEntropyPriorityQueue.Push(0, yPixelOfWorld * this->worldWidthAsPixels + xPixelOfWorld);
-
-    this->generationState = GenerationState::RegionInProgress;
 }
 
 
@@ -159,7 +61,7 @@ void Generator::BuildCurrentRegion() {
     const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
     const int xPixelOfWorld = this->xRegionOfWorld * this->regionWidthAsPixels;
     const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels;
-    printf("Building next region! %i %i \n", this->xRegionOfWorld, this->yRegionOfWorld);
+    printf("+ Building next region! %i %i \n", this->xRegionOfWorld, this->yRegionOfWorld);
 
     if (this->xRegionOfWorld - 1 >= 0 && this->isRegionsGenerated[regionCoordsOfWorld - 1]) {
         for (int y = yPixelOfWorld; y < (yPixelOfWorld + this->regionHeightAsPixels); ++y) {
@@ -182,14 +84,12 @@ void Generator::BuildCurrentRegion() {
         }
     }
 
-    if (this->yRegionOfWorld + 1 >= 0 && this->isRegionsGenerated[regionCoordsOfWorld + this->worldWidthAsRegions]) {
+    if (this->yRegionOfWorld + 1 < this->worldHeightAsRegions && this->isRegionsGenerated[regionCoordsOfWorld + this->worldWidthAsRegions]) {
         for (int x = xPixelOfWorld; x < (xPixelOfWorld + this->regionWidthAsPixels); ++x) {
             const int coordsPixelOfWorld = (yPixelOfWorld + 1) * this->worldWidthAsPixels + x;
             this->cellEntropyPriorityQueue.Push(0, coordsPixelOfWorld);
         }
     }
-
-    this->generationState = GenerationState::RegionInProgress;
 }
 
 void Generator::GenerateNextCell() {
@@ -210,46 +110,76 @@ void Generator::GenerateNextCell() {
     // Propagation
     CompletePropagation(currentCoordinates);
 
-    if (this->generationState != GenerationState::RegionFailure) {
-        if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
-            this->generationState = GenerationState::RegionSuccess;
+    if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
+        const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
+        this->isRegionsGenerated[regionCoordsOfWorld] = true;
+        this->regionsFailures[this->currentRegionId] = 0;
+    }
+}
+
+
+void Generator::StartNextRegion() {
+    // Completed a region 
+    this->currentRegionId++;
+
+    if (this->currentRegionId == this->regionsCoords.size()) {
+        if (this->xRegionOfWorld == this->worldWidthAsRegions - 1) {
+            this->xRegionOfWorld = 0;
+            this->yRegionOfWorld++;
         } else {
-            this->generationState = GenerationState::RegionInProgress;
+            this->xRegionOfWorld++;
         }
-    }
-}
 
-
-void Generator::CompleteRegion() {
-    const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
-    this->isRegionsGenerated[regionCoordsOfWorld] = true;
-    this->regionsCoords.emplace_back(regionCoordsOfWorld);
-
-    if (this->xRegionOfWorld < this->worldWidthAsRegions - 1) {
-        this->xRegionOfWorld++;
-        this->BuildCurrentRegion();
-        this->generationState = GenerationState::RegionInProgress;
-    } else if (this->yRegionOfWorld < this->worldHeightAsRegions - 1) { 
-        this->xRegionOfWorld = 0;
-        this->yRegionOfWorld++;
-        this->BuildCurrentRegion();
-        this->generationState = GenerationState::RegionInProgress;
+        const int coords = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
+        this->regionsCoords.emplace_back(coords);
+        this->regionsFailures.emplace_back(0);
     } else {
-        this->generationState = GenerationState::WorldSuccess;
+        const int coords = this->regionsCoords[this->currentRegionId];
+        this->xRegionOfWorld = coords % this->worldWidthAsRegions;
+        this->yRegionOfWorld = coords / this->worldWidthAsRegions;
+    }
+
+    if (currentRegionId == 0) {
+        this->BuildInitialRegion();
+    } else {
+        this->BuildCurrentRegion();
     }
 }
+
 
 void Generator::Next() {
     switch(this->generationState) {
         case RegionFailure:
-
+            this->BacktrackRegions();
+            this->generationState = GenerationState::RegionOnStandby;
             break;
+
         case RegionInProgress:
             this->GenerateNextCell();
+            
+            if (this->generationState != GenerationState::RegionFailure) {
+                if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
+                    
+                if (this->xRegionOfWorld >= this->worldWidthAsRegions - 1 &&
+                    this->yRegionOfWorld >= this->worldHeightAsRegions - 1) {
+                    this->generationState = GenerationState::WorldSuccess;
+                } else {
+                    this->generationState = GenerationState::RegionOnStandby;
+                }
+                } else {
+                    this->generationState = GenerationState::RegionInProgress;
+                }
+            } else {
+                this->cellEntropyPriorityQueue.Clear();
+            }
+            
             break;
-        case RegionSuccess:
-            this->CompleteRegion();
+
+        case RegionOnStandby:
+            this->StartNextRegion();
+            this->generationState = GenerationState::RegionInProgress;
             break;
+
         case WorldSuccess:
             return;
     }
@@ -366,21 +296,45 @@ void Generator::ExpandAdjacent(int adjacentCoordinates,
     this->cellEntropyPriorityQueue.Push(entropy, adjacentCoordinates);
 }
 
+void Generator::BacktrackRegions() {
+    this->regionsFailures[this->currentRegionId]++;
 
-void Generator::RollbackRegions() {
+    this->ResetRegion(this->xRegionOfWorld, this->yRegionOfWorld);
 
+    const int numRegionsRollback = this->regionsFailures[this->currentRegionId];
+    int beginRollbackIndex = this->currentRegionId - numRegionsRollback;
+    
+    if (beginRollbackIndex < 0) {
+        beginRollbackIndex = 0;
+    }
+
+    for (int i = beginRollbackIndex; i < this->currentRegionId; ++i) {
+        const int xRegion = this->regionsCoords[i] % this->worldWidthAsRegions;
+        const int yRegion = this->regionsCoords[i] / this->worldWidthAsRegions;
+        this->ResetRegion(xRegion, yRegion);
+    }
+    UpdateTexture(generatedTexture, generatedImage.data);
+
+    this->currentRegionId = beginRollbackIndex - 1;
+    printf("@ Rollback to %i\n", this->currentRegionId);
 }
 
 
 void Generator::ResetRegion(int xRegionOfWorld, int yRegionOfWorld) {
-    const int beginY = yRegionOfWorld * this->regionHeightAsPixels;
+    printf("/ Resetting regions %i %i\n", xRegionOfWorld, yRegionOfWorld);
+    fflush(stdout);
     const int beginX = xRegionOfWorld * this->regionWidthAsPixels;
+    const int beginY = yRegionOfWorld * this->regionHeightAsPixels;
 
     for (int y = beginY; y < beginY + this->regionHeightAsPixels; ++y) {
         for (int x = beginX; x < beginX + this->regionWidthAsPixels; ++x) {
             this->cells[y * this->worldWidthAsPixels + x].Clear(this->ruleset);
+
+            ImageDrawPixel(&generatedImage, x, y, BLACK);
         }
     }
+
+    this->isRegionsGenerated[yRegionOfWorld * this->worldWidthAsRegions + xRegionOfWorld] = false;
 }
 
 
