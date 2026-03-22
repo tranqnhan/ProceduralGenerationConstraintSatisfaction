@@ -4,9 +4,9 @@
 #define WINDOW_H 640
 #define WINDOW_N "Procedural Generation Constraint Satisfaction"
 
-#define PIXEL_SCALE 10
+#define PIXEL_SCALE 4
 #define EXPAND 3
-#define CHUNK_WIDTH 64
-#define CHUNK_HEIGHT 64
+#define CHUNK_WIDTH 160
+#define CHUNK_HEIGHT 160
 #define NUM_CHUNKS_WIDTH 1
 #define NUM_CHUNKS_HEIGHT 1

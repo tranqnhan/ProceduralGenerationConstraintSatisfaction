@@ -60,9 +60,9 @@ private:
        return entropyA <= entropyB;
     }); // stores index of next cells to solve
 
-    void CompletePropagation(int beginCoordinates);
-    void Propagate(int coordinates, std::vector<int>& queueCoordinates, std::vector<bool>& isInQueue);
-    void ExpandAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::vector<int>& queueCoordinate, std::vector<bool>& isInQueue);
+    void Propagate(int beginCoordinates);
+    void Expand(int coordinates, std::vector<int>& queueCoordinates, std::vector<bool>& isInQueue);
+    void ContraintAdjacent(int adjacentCoordinates, TileDirection direction, const Cell& cell, std::vector<int>& queueCoordinate, std::vector<bool>& isInQueue);
     void BuildCurrentRegion();
     void BuildInitialRegion();
     void StartNextRegion();

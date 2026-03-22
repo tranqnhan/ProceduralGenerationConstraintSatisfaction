@@ -110,7 +110,7 @@ void Generator::GenerateNextCell() {
     UpdateTexture(generatedTexture, generatedImage.data);
 
     // Propagation
-    CompletePropagation(currentCoordinates);
+    Propagate(currentCoordinates);
 
     if (this->cellEntropyPriorityQueue.GetSize() <= 0) {
         const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
@@ -188,7 +188,7 @@ void Generator::Next() {
 }
 
 
-void Generator::CompletePropagation(int beginCoordinates) {
+void Generator::Propagate(int beginCoordinates) {
     std::vector<int> queueCoordinates;
     std::vector<bool> isInQueue(this->worldWidthAsPixels * this->worldHeightAsPixels);
 
@@ -202,12 +202,12 @@ void Generator::CompletePropagation(int beginCoordinates) {
 
         const Cell& currentCell = this->cells[currentCoordinates];
 
-        Propagate(currentCoordinates, queueCoordinates, isInQueue);
+        this->Expand(currentCoordinates, queueCoordinates, isInQueue);
     }
 }
 
 
-void Generator::Propagate(int coordinates, 
+void Generator::Expand(int coordinates, 
     std::vector<int>& queueCoordinates,
     std::vector<bool>& isInQueue
 ) {
@@ -224,27 +224,27 @@ void Generator::Propagate(int coordinates,
 
     if (x + 1 < xPixelMaxBound) {
         const int adjacentCoordinates = coordinates + 1;
-        this->ExpandAdjacent(adjacentCoordinates, TileDirection::EAST, cell, queueCoordinates, isInQueue);
+        this->ContraintAdjacent(adjacentCoordinates, TileDirection::EAST, cell, queueCoordinates, isInQueue);
     }
 
     if (x - 1 >= xPixelMinBound) {
         const int adjacentCoordinates = coordinates - 1;
-        this->ExpandAdjacent(adjacentCoordinates, TileDirection::WEST, cell, queueCoordinates, isInQueue);
+        this->ContraintAdjacent(adjacentCoordinates, TileDirection::WEST, cell, queueCoordinates, isInQueue);
     }
 
     if (y + 1 < yPixelMaxBound) {
         const int adjacentCoordinates = coordinates + this->worldWidthAsPixels;
-        this->ExpandAdjacent(adjacentCoordinates, TileDirection::SOUTH, cell, queueCoordinates, isInQueue);
+        this->ContraintAdjacent(adjacentCoordinates, TileDirection::SOUTH, cell, queueCoordinates, isInQueue);
     }
 
     if (y - 1 >= yPixelMinBound) {
         const int adjacentCoordinates = coordinates - this->worldWidthAsPixels;
-        this->ExpandAdjacent(adjacentCoordinates, TileDirection::NORTH, cell, queueCoordinates, isInQueue);
+        this->ContraintAdjacent(adjacentCoordinates, TileDirection::NORTH, cell, queueCoordinates, isInQueue);
     }
 }
 
 
-void Generator::ExpandAdjacent(int adjacentCoordinates, 
+void Generator::ContraintAdjacent(int adjacentCoordinates, 
     TileDirection direction, 
     const Cell& cell, 
     std::vector<int>& queueCoordinates,
