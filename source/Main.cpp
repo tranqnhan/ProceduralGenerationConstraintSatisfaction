@@ -32,7 +32,7 @@ void Init() {
 
     auto start = std::chrono::steady_clock::now(); 
 
-    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample8.png", EXPAND);
+    Ruleset ruleset = sampleProcessor.AnalyzeImage("../assets/sample11.png", EXPAND);
 
     auto stop = std::chrono::steady_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
