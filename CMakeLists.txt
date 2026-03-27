@@ -28,6 +28,10 @@ target_sources(ProceduralGenerationConstraintSatisfaction PRIVATE
     source/data/Composite.cpp
     source/ui/TileDisplay.cpp
     source/ui/Cursor.cpp
+    source/scene/SceneCoordinator.cpp
+    source/scene/SceneSharedData.cpp
+    source/scene/SceneGeneration.cpp
+    source/scene/SceneTextureSample.cpp
     source/helper/CompressColor.cpp
     source/helper/BitMath.cpp
     source/Main.cpp

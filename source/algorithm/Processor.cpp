@@ -36,15 +36,7 @@ int Processor::ProcessKernel(int x, int y, int width, int height, int kernelLeng
 }
 
 
-Ruleset Processor::AnalyzeImage(const std::string &imageFile, int length) {
-    // Load image from filename
-    Image sampleImage = LoadImage(imageFile.c_str());    
-    ImageFormat(&sampleImage, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-    Color *colors = (Color *) sampleImage.data;
-
-    const int height = sampleImage.height;
-    const int width = sampleImage.width;
-
+Ruleset Processor::AnalyzeImage(Color *colors, int width, int height, int length) {
     const int compositeHeight = height;
     const int compositeWidth = width;
 
@@ -55,7 +47,6 @@ Ruleset Processor::AnalyzeImage(const std::string &imageFile, int length) {
             ProcessKernel(j, i, width, height, length, colors, composite);
         }
     }
-    UnloadImage(sampleImage);
 
     // Get adjacent kernels
     for (int i = 0; i < composite.GetNumberOfKernels(); ++i) {

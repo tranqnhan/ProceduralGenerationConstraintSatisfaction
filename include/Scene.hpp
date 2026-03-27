@@ -3,8 +3,11 @@
 
 class Scene {
 public:
-    virtual void Init();
-    virtual void Input();
-    virtual void Update();
-    virtual void Render();
+    virtual void OnEnter() = 0;
+    virtual void Input() = 0;
+    virtual void Update() = 0;
+    virtual void Render() = 0;
+    virtual void OnExit() = 0;
+
+    virtual ~Scene() = default;
 };

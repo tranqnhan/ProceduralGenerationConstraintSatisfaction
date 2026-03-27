@@ -4,5 +4,7 @@
 
 class SceneSharedData {
 public:
-    static Texture2D sampleTexture;
+    static Image sampleImage;
+
+    static void Init();
 };

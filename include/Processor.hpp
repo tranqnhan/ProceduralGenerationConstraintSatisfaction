@@ -9,7 +9,7 @@
 
 class Processor {
 public:
-    Ruleset AnalyzeImage(const std::string& imageFile, int expand);
+    Ruleset AnalyzeImage(Color *colors, int width, int height, int expand);
 
     Image debugImage;
     Texture2D debugTexture;
