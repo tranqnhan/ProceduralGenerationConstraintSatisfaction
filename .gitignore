@@ -1,3 +1,5 @@
 build/
+build-web/
+build-scripts/
 .cache/
 archive/

@@ -17,6 +17,7 @@ int Processor::GetModulusSpaceCoord(int coord, int maxCoord) const {
     return coord;
 }
 
+
 int Processor::ProcessKernel(int x, int y, int width, int height, int kernelLength, Color *colors, Composite& compositeTree) {
     // Kernels
     std::vector<uint32_t> kernel(kernelLength * kernelLength);
@@ -37,6 +38,7 @@ int Processor::ProcessKernel(int x, int y, int width, int height, int kernelLeng
 
 
 Ruleset Processor::AnalyzeImage(Color *colors, int width, int height, int length) {
+    std::printf("[Analyze Image] width %i height %i\n", width, height);
     const int compositeHeight = height;
     const int compositeWidth = width;
 

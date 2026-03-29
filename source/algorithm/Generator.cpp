@@ -38,6 +38,8 @@ void Generator::Init(const Ruleset& rules, int regionWidthAsPixels, int regionHe
     this->cellEntropyPriorityQueue.Clear();
 
     this->generationState = GenerationState::RegionOnStandby;
+
+    std::printf("world width %i world height %i\n", this->worldWidthAsPixels, this->worldHeightAsPixels);
 }
 
 
@@ -47,7 +49,7 @@ void Generator::BuildInitialRegion() {
     const int pixelCoordsOfRegion = XorshiftRandom::RandomInteger(0, this->regionWidthAsPixels * this->regionHeightAsPixels - 1);
     
     const int xPixelOfRegion = pixelCoordsOfRegion % this->regionWidthAsPixels;
-    const int yPixelOfRegion = pixelCoordsOfRegion / this->regionHeightAsPixels;
+    const int yPixelOfRegion = pixelCoordsOfRegion / this->regionWidthAsPixels;
     
     const int xPixelOfWorld = this->xRegionOfWorld * this->regionWidthAsPixels + xPixelOfRegion;
     const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels + yPixelOfRegion;
@@ -62,7 +64,7 @@ void Generator::BuildCurrentRegion() {
     const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
     const int xPixelOfWorld = this->xRegionOfWorld * this->regionWidthAsPixels;
     const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels;
-    printf("+ Building next region! %i %i \n", this->xRegionOfWorld, this->yRegionOfWorld);
+    printf("+ Building next region: %i %i \n", this->xRegionOfWorld, this->yRegionOfWorld);
 
     if (this->xRegionOfWorld - 1 >= 0 && this->isRegionsGenerated[regionCoordsOfWorld - 1]) {
         for (int y = yPixelOfWorld; y < (yPixelOfWorld + this->regionHeightAsPixels); ++y) {
@@ -101,6 +103,7 @@ void Generator::GenerateNextCell() {
 
     const int cellX = currentCoordinates % worldWidthAsPixels;
     const int cellY = currentCoordinates / worldWidthAsPixels;
+
 
     const Tile& tile = this->ruleset.GetTile(resultTileId);
     const uint32_t compressedColor = tile.GetColor()[0];

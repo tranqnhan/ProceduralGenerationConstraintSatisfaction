@@ -13,8 +13,8 @@ SceneTextureSample::SceneTextureSample() {
     constexpr int numColors = 10;
 
     unsigned int colorHex[numColors] = {
+        0x222034ff,
         0x639bffff,
-        0xac3232ff,
         0x76428aff,
         0xfbf236ff,
         0x6abe30ff,

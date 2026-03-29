@@ -1,18 +1,17 @@
 #pragma once
 
-#define WINDOW_W 640
-#define WINDOW_H 640
+#define WINDOW_W 960
+#define WINDOW_H 800
 #define WINDOW_N "Procedural Generation Constraint Satisfaction"
 
 #define EXPAND 3
-#define CHUNK_WIDTH 160
-#define CHUNK_HEIGHT 160
+
+#define PIXEL_SCALE 4
+#define CHUNK_WIDTH (WINDOW_W / PIXEL_SCALE)
+#define CHUNK_HEIGHT (WINDOW_H / PIXEL_SCALE)
 #define NUM_CHUNKS_WIDTH 1
 #define NUM_CHUNKS_HEIGHT 1
 
-#define PIXEL_SCALE 4
-
-#define SAMPLE_WIDTH 32
-#define SAMPLE_HEIGHT 32
-
-#define SAMPLE_PIXEL_SCALE 20
+#define SAMPLE_PIXEL_SCALE 16
+#define SAMPLE_WIDTH (WINDOW_W / SAMPLE_PIXEL_SCALE)
+#define SAMPLE_HEIGHT (WINDOW_H / SAMPLE_PIXEL_SCALE)

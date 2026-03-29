@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Procedural Generation Constraint Satisfaction</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+    <div class="row">
+        
+        <canvas id="canvas"></canvas>
+
+        <div class="col">
+            <h2>Procedural Generation Constraint Satisfaction</h2>
+            
+            <a href="https://github.com/tranqnhan/ProceduralGenerationConstraintSatisfaction">https://github.com/tranqnhan/ProceduralGenerationConstraintSatisfaction</a>        
+            
+            <div class="multiline">
+                <b>Controls</b>
+                    Texture Sample Draw Scene:
+                        ENTER - Go to generation scene
+
+                        Color Palette
+                        0 - <div style="display: inline; color:#222034ff">&#9632;</div>
+                        1 - <div style="display: inline; color:#639bffff">&#9632;</div>
+                        2 - <div style="display: inline; color:#76428aff">&#9632;</div>
+                        3 - <div style="display: inline; color:#fbf236ff">&#9632;</div>
+                        4 - <div style="display: inline; color:#6abe30ff">&#9632;</div>
+                        5 - <div style="display: inline; color:#37946eff">&#9632;</div>
+                        6 - <div style="display: inline; color:#df7126ff">&#9632;</div>
+                        7 - <div style="display: inline; color:#ac3232ff">&#9632;</div>
+                        8 - <div style="display: inline; color:#8a6f30ff">&#9632;</div>
+                        9 - <div style="display: inline; color:#ffffffff">&#9632;</div>
+
+                    Generation Scene:
+                        BACKSPACE - Go to texture sample draw pad
+                
+            </div>
+
+            <div> <b>Technologies</b>: C++, Raylib, Emscripten, WASM</div>
+
+            <div> <b>References</b>: 
+                <ul>
+                Paul Merrell. Model Synthesis. https://paulmerrell.org/model-synthesis/
+                </ul> 
+                <ul>
+                Maxim Gumin. Wave Function Collapse. https://github.com/mxgmn/WaveFunctionCollapse
+                </ul> 
+                <ul>
+                Stephen Sherratt. https://www.gridbugs.org/wave-function-collapse/
+                </ul> 
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Import the modularized JS created by Emscripten
+        import createModule from './ProceduralGenerationConstraintSatisfaction.js';
+
+        // Wait for the module to finish loading
+        const Module = await createModule({
+            canvas: document.getElementById('canvas')  // pass your canvas
+        });
+
+        console.log("WASM loaded and ready");
+
+        // Do NOT call main(); raylib automatically starts the main loop
+    </script>
+
+</body>
+</html>
