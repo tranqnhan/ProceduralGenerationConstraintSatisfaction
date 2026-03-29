@@ -26,7 +26,6 @@ int Processor::ProcessKernel(int x, int y, int width, int height, int kernelLeng
         for (int l = 0; l < kernelLength; ++l) {
             const int transformCoordY = GetModulusSpaceCoord(y + k, height - 1);
             const int transformCoordX = GetModulusSpaceCoord(x + l, width - 1);
-            //printf("x %i y %i tx %i ty %i\n", x + l, y + k, transformCoordX, transformCoordY);
             const Color color = colors[transformCoordY * width + transformCoordX];
             const uint32_t compressedColor = CompressColor::Compress(color);
             kernel[k * kernelLength + l] = compressedColor;
@@ -38,7 +37,6 @@ int Processor::ProcessKernel(int x, int y, int width, int height, int kernelLeng
 
 
 Ruleset Processor::AnalyzeImage(Color *colors, int width, int height, int length) {
-    std::printf("[Analyze Image] width %i height %i\n", width, height);
     const int compositeHeight = height;
     const int compositeWidth = width;
 
@@ -87,8 +85,6 @@ Ruleset Processor::AnalyzeImage(Color *colors, int width, int height, int length
             ruleset.SetAdjacentTiles(i, d, adjacentTileIds, adjacentTileFrequencies);
         }
     }
-
-    std::printf("-- Number of Tiles %i\n", ruleset.GetNumberOfTiles());
     
     //DebugGenerateTexture(composite, width, height, length);
 

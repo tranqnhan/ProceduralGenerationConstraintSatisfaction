@@ -38,8 +38,6 @@ void Generator::Init(const Ruleset& rules, int regionWidthAsPixels, int regionHe
     this->cellEntropyPriorityQueue.Clear();
 
     this->generationState = GenerationState::RegionOnStandby;
-
-    std::printf("world width %i world height %i\n", this->worldWidthAsPixels, this->worldHeightAsPixels);
 }
 
 
@@ -64,7 +62,6 @@ void Generator::BuildCurrentRegion() {
     const int regionCoordsOfWorld = this->yRegionOfWorld * this->worldWidthAsRegions + this->xRegionOfWorld;
     const int xPixelOfWorld = this->xRegionOfWorld * this->regionWidthAsPixels;
     const int yPixelOfWorld = this->yRegionOfWorld * this->regionHeightAsPixels;
-    printf("+ Building next region: %i %i \n", this->xRegionOfWorld, this->yRegionOfWorld);
 
     if (this->xRegionOfWorld - 1 >= 0 && this->isRegionsGenerated[regionCoordsOfWorld - 1]) {
         for (int y = yPixelOfWorld; y < (yPixelOfWorld + this->regionHeightAsPixels); ++y) {
@@ -314,13 +311,10 @@ void Generator::BacktrackRegions() {
     UpdateTexture(generatedTexture, generatedImage.data);
 
     this->currentRegionId = beginRollbackIndex - 1;
-    printf("@ Rollback to %i\n", this->currentRegionId);
 }
 
 
 void Generator::ResetRegion(int xRegionOfWorld, int yRegionOfWorld) {
-    printf("/ Resetting regions %i %i\n", xRegionOfWorld, yRegionOfWorld);
-    fflush(stdout);
     const int beginX = xRegionOfWorld * this->regionWidthAsPixels;
     const int beginY = yRegionOfWorld * this->regionHeightAsPixels;
 

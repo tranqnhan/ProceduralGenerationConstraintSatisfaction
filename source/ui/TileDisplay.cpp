@@ -2,7 +2,6 @@
 
 #include <raylib.h>
 
-#include "BitMath.hpp"
 #include "CompressColor.hpp"
 #include "Generator.hpp"
 #include "Program.hpp"
@@ -85,7 +84,6 @@ void TileDisplay::Update(const Generator& generator) {
 
         }
 
-        //std::printf("coords %i tile id %i\n", coords, this->uiSelectTileId);
 
         this->uiSelectCell = false;
     }
