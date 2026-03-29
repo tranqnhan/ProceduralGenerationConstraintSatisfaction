@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.15...4.0)
 
-project(ProceduralGenerationConstraintSatisfaction LANGUAGES C CXX)
+project(PGCS LANGUAGES C CXX)
+
+# cmake -B build -S . -DRAYLIB_PATH=$HOME/libs/raylib
+# cmake --build build
+
+# emcmake cmake -B build-web -S . -DRAYLIB_PATH=$HOME/libs/raylib
+# cmake --build build-web
 
 # cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
@@ -21,14 +27,14 @@ endif()
 
 add_subdirectory(${RAYLIB_PATH} raylib-build)
 
-add_executable(ProceduralGenerationConstraintSatisfaction)
+add_executable(PGCS)
 
-target_include_directories(ProceduralGenerationConstraintSatisfaction PUBLIC include library/include)
+target_include_directories(PGCS PUBLIC include library/include)
 
-target_link_libraries(ProceduralGenerationConstraintSatisfaction raylib)
-target_compile_options(ProceduralGenerationConstraintSatisfaction PRIVATE -g)
+target_link_libraries(PGCS raylib)
+target_compile_options(PGCS PRIVATE -g)
 
-target_sources(ProceduralGenerationConstraintSatisfaction PRIVATE
+target_sources(PGCS PRIVATE
     source/algorithm/Processor.cpp
     source/algorithm/Generator.cpp
     source/algorithm/Cell.cpp
@@ -49,6 +55,10 @@ target_sources(ProceduralGenerationConstraintSatisfaction PRIVATE
 
 
 if(EMSCRIPTEN)
+    set_target_properties(PGCS PROPERTIES
+        LINK_FLAGS "--preload-file ../assets"
+    )
+
     set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPLATFORM_WEB")

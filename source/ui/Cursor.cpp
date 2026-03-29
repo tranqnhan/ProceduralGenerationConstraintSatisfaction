@@ -6,7 +6,7 @@ Cursor::Cursor() {}
 
 
 void Cursor::Init() {
-    this->cursorTexture = LoadTexture("../assets/cursor.png");
+    this->cursorTexture = LoadTexture("assets/cursor.png");
 }
 
 

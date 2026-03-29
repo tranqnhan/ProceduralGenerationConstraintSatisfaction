@@ -39,12 +39,10 @@ private:
     Ruleset ruleset;
     int worldWidthAsPixels; 
     int worldHeightAsPixels;
-
     int regionWidthAsPixels;
     int regionHeightAsPixels;
     int worldWidthAsRegions;
     int worldHeightAsRegions;
-
     int xRegionOfWorld;
     int yRegionOfWorld;
 
