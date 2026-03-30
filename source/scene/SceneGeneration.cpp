@@ -31,8 +31,10 @@ void SceneGeneration::Input() {
 }
 
 void SceneGeneration::Update() {
-    for (int i = 0; i < NUM_GENERATES_PER_ITERATION; ++i) {
-        tileGenerator.Next();
+    if (!tileGenerator.IsCompleted()) {
+        for (int i = 0; i < NUM_GENERATES_PER_ITERATION; ++i) {
+            tileGenerator.Next();
+        }
     }
 }
 
