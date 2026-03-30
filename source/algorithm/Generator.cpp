@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <thread>
 #include <vector>
 
 #include <raylib.h>
@@ -106,9 +107,11 @@ void Generator::GenerateNextCell() {
     const Tile& tile = this->ruleset.GetTile(resultTileId);
     const uint32_t compressedColor = tile.GetColor()[0];
 
-    ImageDrawPixel(&generatedImage, cellX, cellY, CompressColor::Decompress(compressedColor));
-    UpdateTexture(generatedTexture, generatedImage.data);
+    updateTextureMutex.lock();
+    ImageDrawPixel(&this->generatedImage, cellX, cellY, CompressColor::Decompress(compressedColor));
+    updateTextureMutex.unlock();
 
+    
     // Propagation
     Propagate(currentCoordinates);
 
@@ -145,6 +148,19 @@ void Generator::StartNextRegion() {
         this->BuildInitialRegion();
     } else {
         this->BuildCurrentRegion();
+    }
+}
+
+
+void Generator::FullGenerateAsync() {
+    std::thread t(&Generator::FullGenerate, this);
+    t.detach();
+}
+
+
+void Generator::FullGenerate() {
+    while (!this->isCompleted) {
+        this->Next();
     }
 }
 
@@ -310,7 +326,6 @@ void Generator::BacktrackRegions() {
         const int yRegion = this->regionsCoords[i] / this->worldWidthAsRegions;
         this->ResetRegion(xRegion, yRegion);
     }
-    UpdateTexture(generatedTexture, generatedImage.data);
 
     this->currentRegionId = beginRollbackIndex - 1;
 }
@@ -320,6 +335,7 @@ void Generator::ResetRegion(int xRegionOfWorld, int yRegionOfWorld) {
     const int beginX = xRegionOfWorld * this->regionWidthAsPixels;
     const int beginY = yRegionOfWorld * this->regionHeightAsPixels;
 
+    updateTextureMutex.lock();
     for (int y = beginY; y < beginY + this->regionHeightAsPixels; ++y) {
         for (int x = beginX; x < beginX + this->regionWidthAsPixels; ++x) {
             this->cells[y * this->worldWidthAsPixels + x].Clear(this->ruleset);
@@ -327,6 +343,7 @@ void Generator::ResetRegion(int xRegionOfWorld, int yRegionOfWorld) {
             ImageDrawPixel(&generatedImage, x, y, BLACK);
         }
     }
+    updateTextureMutex.unlock();
 
     this->isRegionsGenerated[yRegionOfWorld * this->worldWidthAsRegions + xRegionOfWorld] = false;
 }
@@ -344,6 +361,11 @@ const Cell& Generator::GetCell(int coordinates) const {
 
 
 void Generator::Render() {
+    if (updateTextureMutex.try_lock()) {
+        UpdateTexture(this->generatedTexture, this->generatedImage.data);
+        updateTextureMutex.unlock();
+    }
+
     DrawTextureEx(this->generatedTexture, Vector2{.x = 0, .y = 0}, 0, PIXEL_SCALE, WHITE);
 }
 

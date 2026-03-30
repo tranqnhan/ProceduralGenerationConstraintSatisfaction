@@ -17,7 +17,9 @@ void SceneGeneration::OnEnter() {
         EXPAND);
 
     this->tileGenerator.Init(ruleset, CHUNK_WIDTH, CHUNK_HEIGHT, NUM_CHUNKS_WIDTH, NUM_CHUNKS_HEIGHT);
+    this->tileGenerator.FullGenerateAsync();
 }
+
 
 void SceneGeneration::Input() {
     if (IsKeyDown(KEY_BACKSPACE)) {
@@ -30,13 +32,11 @@ void SceneGeneration::Input() {
     }
 }
 
+
 void SceneGeneration::Update() {
-    if (!tileGenerator.IsCompleted()) {
-        for (int i = 0; i < NUM_GENERATES_PER_ITERATION; ++i) {
-            tileGenerator.Next();
-        }
-    }
 }
+
+
 
 void SceneGeneration::Render() {
     tileGenerator.Render();

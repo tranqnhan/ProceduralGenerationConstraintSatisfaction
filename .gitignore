@@ -3,3 +3,4 @@ build-web/
 build-web.sh
 .cache/
 archive/
+web-server.py

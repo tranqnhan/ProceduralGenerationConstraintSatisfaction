@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <vector>
 
 #include <raylib.h>
@@ -21,6 +22,8 @@ public:
     Generator();
 
     void Init(const Ruleset& rules, int chunkWidth, int chunkHeight, int numChunkWidth, int numChunkHeight);
+    void FullGenerateAsync();
+    void FullGenerate();
     void Next();
 
     int GetCellTileId(int coordinates) const;
@@ -60,6 +63,8 @@ private:
     Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
        return entropyA <= entropyB;
     }); // stores index of next cells to solve
+
+    std::mutex updateTextureMutex;
 
     void Propagate(int beginCoordinates);
     void Expand(int coordinates, std::vector<int>& queueCoordinates, std::vector<bool>& isInQueue);
