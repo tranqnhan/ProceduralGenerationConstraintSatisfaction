@@ -32,7 +32,7 @@ add_executable(PGCS)
 target_include_directories(PGCS PUBLIC include library/include)
 
 target_link_libraries(PGCS raylib)
-target_compile_options(PGCS PRIVATE -g)
+target_compile_options(PGCS PRIVATE -O3)
 
 target_sources(PGCS PRIVATE
     source/algorithm/Processor.cpp
