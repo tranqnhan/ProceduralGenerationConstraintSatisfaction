@@ -11,6 +11,7 @@ Cell::Cell(const Ruleset& ruleset) {
     this->globalFrequency = 0;
     this->resultTileId = SpecialCellType::Unexplored;
     this->numberOfPossibleTiles = ruleset.GetNumberOfTiles();
+    this->updateTileIds = true;
 }
 
 
@@ -22,6 +23,7 @@ bool Cell::Intersect(const std::vector<uint64_t>& otherPossibilities) {
         if (this->tilePossibilities[i] != mask) {
             this->tilePossibilities[i] = mask;
             changedIndex = i + 1;
+            this->updateTileIds = true;
             break;
         }
     }
@@ -77,15 +79,20 @@ int Cell::Collapse(const Ruleset& ruleset) {
         }
     }
 
+    this->tileIds = std::vector<int> { this->resultTileId };
+    this->updateTileIds = false;
+    
     return this->resultTileId;
 }
 
 
-std::vector<int> Cell::GetTilePossibilitiesAsIds() const {
-    if (this->resultTileId >= 0) {
-        return std::vector<int> { this->resultTileId };
+const std::vector<int>& Cell::GetTilePossibilitiesAsIds() {
+    if (this->updateTileIds) {
+        BitMath::GetSetPositions(this->tileIds, this->tilePossibilities);
+        this->updateTileIds = false;
     }
-    return BitMath::GetSetPositions(this->tilePossibilities);
+
+    return this->tileIds;
 }
 
     
@@ -110,4 +117,5 @@ void Cell::Clear(const Ruleset& ruleset) {
     this->globalFrequency = 0;
     this->resultTileId = SpecialCellType::Unexplored;
     this->numberOfPossibleTiles = ruleset.GetNumberOfTiles();
+    this->updateTileIds = true;
 }

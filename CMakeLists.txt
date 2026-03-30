@@ -42,7 +42,6 @@ target_sources(PGCS PRIVATE
     source/data/Kernel.cpp
     source/data/Ruleset.cpp
     source/data/Composite.cpp
-    source/ui/TileDisplay.cpp
     source/ui/Cursor.cpp
     source/scene/SceneCoordinator.cpp
     source/scene/SceneSharedData.cpp

@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <cstdio>
 #include <vector>
 
 #include <raylib.h>
@@ -211,7 +210,7 @@ void Generator::Expand(
     std::vector<int>& queueCoordinates,
     std::vector<bool>& isInQueue
 ) {
-    const Cell& cell = this->cells[coordinates];
+    Cell& cell = this->cells[coordinates];
 
     // Todo: possible optimization here
     const int x = coordinates % this->worldWidthAsPixels;
@@ -222,7 +221,7 @@ void Generator::Expand(
     const int yPixelMinBound = this->yRegionOfWorld * this->regionHeightAsPixels;
     const int yPixelMaxBound = yPixelMinBound + this->regionHeightAsPixels;
 
-    const std::vector<int> tilePossibilitiesIds = cell.GetTilePossibilitiesAsIds();
+    const std::vector<int>& tilePossibilitiesIds = cell.GetTilePossibilitiesAsIds();
 
     if (x + 1 < xPixelMaxBound) {
         const int adjacentCoordinates = coordinates + 1;
