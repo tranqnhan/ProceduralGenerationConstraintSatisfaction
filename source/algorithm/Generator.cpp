@@ -37,6 +37,8 @@ void Generator::Init(const Ruleset& rules, int regionWidthAsPixels, int regionHe
     this->cellEntropyPriorityQueue.Clear();
 
     this->generationState = GenerationState::RegionOnStandby;
+
+    this->isCompleted = false;
 }
 
 
@@ -181,6 +183,7 @@ void Generator::Next() {
             break;
 
         case WorldSuccess:
+            this->isCompleted = true;
             return;
     }
 }
@@ -357,6 +360,11 @@ int Generator::GetWidth() const {
 
 int Generator::GetHeight() const {
     return this->worldHeightAsPixels;
+}
+
+
+bool Generator::IsCompleted() const {
+    return this->isCompleted;
 }
 
 

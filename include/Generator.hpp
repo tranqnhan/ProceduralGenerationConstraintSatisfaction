@@ -28,7 +28,8 @@ public:
     const Ruleset& GetRuleset() const;
     int GetWidth() const;
     int GetHeight() const;
-
+    bool IsCompleted() const;
+    
     void Render();
 
     ~Generator();
@@ -53,6 +54,8 @@ private:
     std::vector<int> regionsCoords;
     std::vector<int> regionsFailures;
     int currentRegionId;
+
+    bool isCompleted;
 
     Heap<int> cellEntropyPriorityQueue = Heap<int>([this](const int& entropyA, const int& entropyB) -> bool {        
        return entropyA <= entropyB;

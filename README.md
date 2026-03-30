@@ -7,4 +7,4 @@ Based on Model Synthesis by Paul Merrell and Wave Function Collapse by Maxim Gum
 ### Demo
 Web: https://tranqnhan.github.io/ProceduralGenerationConstraintSatisfaction/
 
-![Example generation from a house sample](generation_example.png)
+![Example generation](pgcs.gif)
