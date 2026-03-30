@@ -100,6 +100,11 @@ void Generator::GenerateNextCell() {
 
     const int resultTileId = this->cells[currentCoordinates].Collapse(this->ruleset);
 
+    if (resultTileId < 0) {
+        this->generationState = RegionFailure;
+        return;
+    }
+
     const int cellX = currentCoordinates % worldWidthAsPixels;
     const int cellY = currentCoordinates / worldWidthAsPixels;
 

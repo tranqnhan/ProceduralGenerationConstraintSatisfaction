@@ -54,6 +54,7 @@ target_sources(PGCS PRIVATE
 
 
 if(EMSCRIPTEN)
+    message("Setting flags for web build...")
     set_target_properties(PGCS PROPERTIES
         LINK_FLAGS "--preload-file ../assets"
     )
