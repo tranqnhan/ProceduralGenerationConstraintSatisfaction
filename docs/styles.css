@@ -1,6 +1,6 @@
 
 body {
-    background-color: coral;
+    background-color: #005f73;
 }
 
 .row {
@@ -12,6 +12,7 @@ body {
 }
 
 .col {
+    color: #e9d8a6;
     display: flex;                
     flex-direction: column;
     justify-content: left;      
@@ -20,5 +21,14 @@ body {
 }
 
 .multiline {
-  white-space: pre-wrap;
+    white-space: pre-wrap;
+}
+
+.controls {
+    background-color: #9b2226;
+    padding: 10px;
+}
+
+a {
+    color: #ee9b00;
 }
